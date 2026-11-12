@@ -1,0 +1,25 @@
+Section 4.1 case with a real model: the Verifier catches an unsupported answer, the agent searches again, then passes.
+Model: gemma4 (8B, Q4) via Ollama, alias gemma4-16k (num_ctx 16384). Prompt v2. Hash embedder. LLM_FALLBACK=none.
+Captured 2026-11-12 with scripts in this session (scenario S01-fd-bank-app); output trimmed to the trace lines.
+
+=== S01-fd-bank-app expected={'route': 'refer-to-other-regulator', 'regulator': 'RBI', 'domain': 'out_of_jurisdiction'} -> refer-to-other-regulator RBI None degraded=False 340.9s
+  LLM investigate openai_compat pt=1312 ct=245 13.4853s  :: '{"action":"tool","tool":"search_corpus","args":{"query":"fixed deposit bank interest lower than promised","regulator":null,"kind":null,"top_k":3}}'
+  TOOL search_corpus {"query": "fixed deposit bank interest lower than promised", "regulator": null, "kind": null, "top_k": 3} ['RBI-IOS#3(1)(e)', 'RBI-IOS#3(1)(i)', 'RBI-IOS#3(1)(j)']
+  LLM investigate openai_compat pt=2039 ct=532 22.7379s  :: '{"action":"tool","tool":"list_clauses","args":{"regulator":"SEBI","kind":"scope","query":"bank deposit"}}'
+  TOOL list_clauses {"regulator": "SEBI", "kind": "scope", "query": "bank deposit"} ['SEBI-MFR#2(1)(z)(i)', 'SEBI-MFR#2(1)(d)', 'SEBI-SCORES#SCH-V', 'SEBI-SCORES#SCH-II']
+  LLM investigate openai_compat pt=3098 ct=1566 80.0036s  :: '```json\n{\n  "action": "finish",\n  "determination": {\n    "route": "refer-to-other-regulator",\n    "regulator": "RBI",\n    "domain": "unknown",\n    "entity_type"'
+   VERIFY {'passed': False, 'issues': ["the complaint is addressed to SEBI: cite the SEBI maintainability clause that excludes matters within the RBI framework from SEBI's (search SEBI maintainability clauses for 'reserve bank')"]}
+  LLM investigate openai_compat pt=3170 ct=721 41.837s  :: '{"action":"tool","tool":"list_clauses","args":{"regulator":"SEBI","kind":"general","query":"reserve bank"}}'
+  TOOL list_clauses {"regulator": "SEBI", "kind": "general", "query": "reserve bank"} ['SEBI-SCORES#AI-2.1', 'SEBI-SCORES#AI-3.1', 'SEBI-MFR#59B', 'SEBI-MFR#25(15)']
+  LLM investigate openai_compat pt=4079 ct=688 50.6013s  :: '{"action":"tool","tool":"list_clauses","args":{"regulator":"SEBI","kind":"maintainability","query":"reserve bank"}}'
+  TOOL list_clauses {"regulator": "SEBI", "kind": "maintainability", "query": "reserve bank"} ['SEBI-SCORES#AII-5.3', 'SEBI-SCORES#AII-3', 'SEBI-SCORES#AII-9', 'SEBI-SCORES#AII-5.7']
+  LLM investigate openai_compat pt=5077 ct=1492 93.5988s  :: '```json\n{\n  "action": "finish",\n  "determination": {\n    "route": "refer-to-other-regulator",\n    "regulator": "RBI",\n    "domain": null,\n    "entity_type": "ba'
+  LLM verify openai_compat pt=681 ct=760 38.566s  :: '```json\n{\n  "supported": true,\n  "issues": []\n}\n```'
+   VERIFY {'passed': True, 'issues': []}
+  basis: [('complaint', "I invested in a fixed deposit through my bank's app."), ('SEBI-SCORES#AII-5.3', 'The following types of complaints shall not be dealt through'), ('RBI-IOS#3(1)(e)', '"bank" means a \'banking company\', a \'corresponding new bank\'')]
+
+Reading: attempt 1 routed correctly but cited only the RBI bank definition. The deterministic Verifier rejected it because the
+investor addressed SEBI and no SEBI exclusion was cited. Attempt 2: the model tried SEBI "general" clauses, then
+"maintainability", found SEBI-SCORES#AII-5.3, cited it, and both the deterministic checks and the model judge passed.
+(Large completion-token counts here are the model's hidden reasoning; see INC-010. domain null was normalised to
+out_of_jurisdiction for an RBI route and logged.)

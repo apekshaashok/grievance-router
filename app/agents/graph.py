@@ -302,7 +302,7 @@ def n_tools(state: State, config) -> dict:
 def n_verify(state: State, config) -> dict:
     ctx = _ctx(config)
     det, attempt, fields = state["proposal"], state["attempt"], state["complaint"]
-    if (det.get("regulator") or "").upper() == "RBI" and det.get("domain") not in DOMAINS:
+    if (det.get("regulator") or "").upper() == "RBI" and det.get("domain") != "out_of_jurisdiction":
         # for an RBI route the domain label is out_of_jurisdiction by definition; repair the label, record that we did
         ctx.event("normalized", field="domain", was=det.get("domain"), now="out_of_jurisdiction")
         det = {**det, "domain": "out_of_jurisdiction"}

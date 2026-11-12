@@ -81,7 +81,7 @@ prompts; INC-004), and raise the timeouts for local inference:
 
 ```bash
 printf 'FROM gemma4\nPARAMETER num_ctx 16384\n' > Modelfile && ollama create gemma4-16k -f Modelfile
-# in .env also:  LLM_TIMEOUT_S=240   RUN_TIMEOUT_S=900
+# in .env also:  LLM_TIMEOUT_S=240   RUN_TIMEOUT_S=900   LLM_REASONING_EFFORT=none  (gemma4 is a thinking model; INC-010)
 ```
 
 Set a spending limit on any paid account first. `LLM_FALLBACK=rules` (default) degrades to the rule engine when the provider is
@@ -108,7 +108,7 @@ down (runs are flagged `degraded`); `LLM_FALLBACK=none` escalates instead.
 python3.11 -m venv .venv && . .venv/bin/activate
 pip install -r requirements-dev.txt -r requirements-st.txt
 export KMP_DUPLICATE_LIB_OK=TRUE          # macOS only: faiss and torch both ship OpenMP (INC-008)
-pytest -q                                 # 24 tests; offline (hash embedder, rule engine, in-memory Redis)
+pytest -q                                 # 25 tests; offline (hash embedder, rule engine, in-memory Redis)
 
 python -m eval.run_eval -v                                             # 34 scenarios incl. the 4.1 case
 python -m eval.run_eval --variants PROMPT_VERSION=v1 PROMPT_VERSION=v2   # L2: compare two prompt versions

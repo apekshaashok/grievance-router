@@ -1,0 +1,5 @@
+== variant: baseline  (13 scenarios)
+W1112 21:54:23.551000 71265 .venv/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 4365.93it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{"ts": "2026-11-12T16:24:25.519Z", "level": "WARNING", "service": "service", "logger": "huggingface_hub.utils._http", "event": "Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.", "correlation_id": "-", "run_id": "-"}
