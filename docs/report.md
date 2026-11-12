@@ -120,7 +120,32 @@ verbatim claims.
 
 ### Results with a real model (gemma4 8B via Ollama, prompt v2, MiniLM, fallback disabled)
 
-REAL_MODEL_RESULTS
+Stratified subset of 13 of the 34 scenarios (`--only S01 S02 S05 S06 S09 S12 S14 S16 S18 S20 S22 S24 S25`): a local
+8B model needs ~4 min per scenario, so the full set twice would take ~5 hours on this laptop. Results:
+`eval/real/20261112-222711.json`, log `eval/real/gemma4_v2_subset.log`. Settings: `LLM_REASONING_EFFORT=none`,
+model judge on (the shipped default), `RUN_TIMEOUT_S=900`, `LLM_TIMEOUT_S=240`, no other load on the machine.
+
+| Metric | gemma4, 13 scenarios |
+|---|---|
+| Accuracy (route, regulator, domain, timeline) | **0.46** (6/13) |
+| Correct on the first attempt | 0.08 (1/13) |
+| Groundedness / faithfulness | 1.00 / 1.00 |
+| Hallucination rate (after / before verification) | 0.00 / 0.00 |
+| Context relevance / gold recall | 0.20 / 0.68 |
+| Verification failures caught | 9 (mean 1.7 attempts per run) |
+| Cost per 100 runs (notional prices) | $1.34; largest driver `investigate`, 98% |
+
+| Outcome | Scenarios |
+|---|---|
+| Correct | S01 (the 4.1 case, citing `SEBI-SCORES#AII-5.3`), S02, S05 (RBI), S06 (broker, 21 days), S14 (listed company), S22 (court: not maintainable) |
+| Escalated instead (safe, not useful) | S09 MF, S12 registrar, S16 depository, S25 (4.1 + injection): `verification_failed` after two attempts; S20 insurance: escalated, labelled `entity_out_of_corpus` correctly but scored wrong only because the model wrote the string `"null"` as regulator (now normalised, like the RBI domain label) |
+| **Wrong but grounded** | **S18** (UPI debit at the bank + MF units not allotted, two regulators): assigned to the mutual fund. **S24** (pure market loss): assigned to the mutual fund with a 21-day timeline |
+
+Reading: the system never fabricated a citation (every claim of every answer resolved and was supported); when the model
+could not assemble verifiable evidence it escalated, which is the F7 behaviour the brief asks for. Its weaknesses are the
+two grounded-but-wrong answers: the Verifier checks that each cited clause says what is claimed and is of the right
+kind, not that a second regulator is also involved (S18) or that the complaint describes a deficiency at all (S24). The
+8B local model also needs a second attempt on most runs. A larger hosted model would be the first thing to try.
 
 ### L2: two prompt versions on the same set
 
@@ -214,3 +239,6 @@ so prompt size grows with the step count. Options: send only new passages plus a
 * **Market-loss complaints**: no indexed provision decides them, so they escalate. That is correct for this corpus, and
   a reminder that the system is only as complete as the documents indexed.
 * **TruLens** was not used (section 5).
+* **Real-model quality is modest**: 6 of 13 on the subset with an 8B local model, two of the misses grounded but wrong
+  (section 5). The first two full real-model runs were lost to a tripped breaker under load (INC-011) and to the time a
+  5-hour run would take; the subset is what was measured.

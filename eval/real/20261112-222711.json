@@ -1,0 +1,1044 @@
+[
+ {
+  "label": "baseline",
+  "overrides": {},
+  "n": 13,
+  "metrics": {
+   "accuracy_final": 0.46153846153846156,
+   "accuracy_first_attempt": 0.07692307692307693,
+   "groundedness": 1.0,
+   "context_relevance": 0.19964075741939516,
+   "gold_recall": 0.6749999999999999,
+   "faithfulness": 1.0,
+   "hallucination_rate": 0.0,
+   "hallucination_rate_before_verification": 0.0,
+   "verification_caught": 9,
+   "mean_steps": 7.615384615384615,
+   "mean_tool_calls": 5.923076923076923,
+   "mean_attempts": 1.6923076923076923,
+   "provider_reruns": 0,
+   "cost_per_100_runs_usd": 1.3430499999999996,
+   "tokens_per_100_runs": 2516546.153846154,
+   "largest_cost_driver": "investigate",
+   "largest_cost_driver_share": 0.9756610241327862
+  },
+  "rows": [
+   {
+    "id": "S01-fd-bank-app",
+    "description": "SECTION 4.1 CASE: bank FD, investment vocabulary, names SEBI",
+    "expected": {
+     "route": "refer-to-other-regulator",
+     "regulator": "RBI",
+     "domain": "out_of_jurisdiction"
+    },
+    "route": "refer-to-other-regulator",
+    "regulator": "RBI",
+    "domain": "out_of_jurisdiction",
+    "escalation_reason": null,
+    "correct": true,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 9,
+    "tool_calls": 7,
+    "exec_s": 120.259,
+    "degraded": false,
+    "tokens": 36846,
+    "cost_usd": 0.019514,
+    "by_step": {
+     "investigate": {
+      "calls": 9,
+      "prompt_tokens": 35045,
+      "completion_tokens": 1080,
+      "cost_usd": 0.0191425,
+      "latency_s": 114.3994688987732
+     },
+     "verify": {
+      "calls": 1,
+      "prompt_tokens": 710,
+      "completion_tokens": 11,
+      "cost_usd": 0.00037150000000000003,
+      "latency_s": 5.157352924346924
+     }
+    },
+    "final": {
+     "n_claims": 3,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 4,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.2631578947368421,
+     "gold_recall": 1.0
+    },
+    "retrieved_ids": [
+     "RBI-IOS#1(4)",
+     "RBI-IOS#10(2)(a)",
+     "RBI-IOS#10(2)(c-f)",
+     "RBI-IOS#14(3)",
+     "RBI-IOS#15(8)",
+     "RBI-IOS#17(3)",
+     "RBI-IOS#3(1)(e)",
+     "RBI-IOS#3(1)(g)",
+     "RBI-IOS#3(1)(j)",
+     "RBI-IOS#8(1)",
+     "RBI-IOS#9",
+     "SEBI-SCORES#AI-5.5",
+     "SEBI-SCORES#AII-1",
+     "SEBI-SCORES#AII-5.3",
+     "SEBI-SCORES#AII-5.6",
+     "SEBI-SCORES#AII-9",
+     "SEBI-SCORES#P1",
+     "SEBI-SCORES#SCH-II",
+     "SEBI-SCORES#SCH-V"
+    ],
+    "gold_clauses": [
+     "RBI-IOS#3(1)(e)",
+     "RBI-IOS#3(1)(j)",
+     "RBI-IOS#9",
+     "RBI-IOS#10(2)(a)",
+     "SEBI-SCORES#AII-5.3"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint concerns a fixed deposit made through a bank's app, which falls under the purview of the RBI, not SEBI. SEBI's scope is limited to securities market matters, and the RBI's framework governs banking products like fixed deposits.",
+    "provider_reruns": 0,
+    "citations": [
+     "SEBI-SCORES#AII-5.3",
+     "RBI-IOS#1(4)"
+    ]
+   },
+   {
+    "id": "S02-savings-interest",
+    "description": "Savings account interest not credited",
+    "expected": {
+     "route": "refer-to-other-regulator",
+     "regulator": "RBI",
+     "domain": "out_of_jurisdiction"
+    },
+    "route": "refer-to-other-regulator",
+    "regulator": "RBI",
+    "domain": "out_of_jurisdiction",
+    "escalation_reason": null,
+    "correct": true,
+    "first_attempt_correct": false,
+    "verification_caught_error": false,
+    "attempts": 1,
+    "steps": 3,
+    "tool_calls": 2,
+    "exec_s": 42.673,
+    "degraded": false,
+    "tokens": 6939,
+    "cost_usd": 0.0038334999999999997,
+    "by_step": {
+     "investigate": {
+      "calls": 3,
+      "prompt_tokens": 5970,
+      "completion_tokens": 353,
+      "cost_usd": 0.0035145,
+      "latency_s": 39.174253940582275
+     },
+     "verify": {
+      "calls": 1,
+      "prompt_tokens": 605,
+      "completion_tokens": 11,
+      "cost_usd": 0.000319,
+      "latency_s": 3.2861969470977783
+     }
+    },
+    "final": {
+     "n_claims": 3,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 3,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.3333333333333333,
+     "gold_recall": 0.5
+    },
+    "retrieved_ids": [
+     "RBI-IOS#1(4)",
+     "RBI-IOS#16",
+     "RBI-IOS#17(3)",
+     "RBI-IOS#3(1)(e)",
+     "RBI-IOS#3(1)(j)",
+     "RBI-IOS#8(1)"
+    ],
+    "gold_clauses": [
+     "RBI-IOS#3(1)(e)",
+     "RBI-IOS#3(1)(j)",
+     "RBI-IOS#9",
+     "RBI-IOS#10(2)(a)"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint concerns a bank's failure to credit interest on a savings account, which falls under the purview of the RBI's Integrated Ombudsman Scheme.",
+    "provider_reruns": 0,
+    "citations": [
+     "RBI-IOS#1(4)",
+     "RBI-IOS#8(1)"
+    ]
+   },
+   {
+    "id": "S05-nbfc-loan",
+    "description": "NBFC loan fees",
+    "expected": {
+     "route": "refer-to-other-regulator",
+     "regulator": "RBI",
+     "domain": "out_of_jurisdiction"
+    },
+    "route": "refer-to-other-regulator",
+    "regulator": "RBI",
+    "domain": "out_of_jurisdiction",
+    "escalation_reason": null,
+    "correct": true,
+    "first_attempt_correct": false,
+    "verification_caught_error": false,
+    "attempts": 1,
+    "steps": 6,
+    "tool_calls": 5,
+    "exec_s": 127.733,
+    "degraded": false,
+    "tokens": 24963,
+    "cost_usd": 0.0135935,
+    "by_step": {
+     "investigate": {
+      "calls": 7,
+      "prompt_tokens": 23064,
+      "completion_tokens": 1101,
+      "cost_usd": 0.013183499999999999,
+      "latency_s": 120.43919253349304
+     },
+     "verify": {
+      "calls": 1,
+      "prompt_tokens": 787,
+      "completion_tokens": 11,
+      "cost_usd": 0.00041000000000000005,
+      "latency_s": 5.395035982131958
+     }
+    },
+    "final": {
+     "n_claims": 3,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 3,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.16666666666666666,
+     "gold_recall": 0.6666666666666666
+    },
+    "retrieved_ids": [
+     "RBI-IOS#1(4)",
+     "RBI-IOS#10(1)",
+     "RBI-IOS#10(2)(a)",
+     "RBI-IOS#10(2)(b)",
+     "RBI-IOS#10(2)(c-f)",
+     "RBI-IOS#14(3)",
+     "RBI-IOS#15(8)",
+     "RBI-IOS#3(1)(e)",
+     "RBI-IOS#3(1)(i)",
+     "RBI-IOS#3(1)(j)",
+     "SEBI-MFR#25(15)",
+     "SEBI-SCORES#SCH-V"
+    ],
+    "gold_clauses": [
+     "RBI-IOS#3(1)(i)",
+     "RBI-IOS#3(1)(j)",
+     "RBI-IOS#9"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint concerns an NBFC's processing fees, which falls under the purview of the RBI's Integrated Ombudsman Scheme. The complaint is not directly related to SEBI's regulated entities or services.",
+    "provider_reruns": 0,
+    "citations": [
+     "RBI-IOS#3(1)(i)",
+     "RBI-IOS#3(1)(j)"
+    ]
+   },
+   {
+    "id": "S06-broker-unauthorised",
+    "description": "Broker: unauthorised trades",
+    "expected": {
+     "route": "assign-to-entity",
+     "regulator": "SEBI",
+     "domain": "broker",
+     "timeline_days": 21
+    },
+    "route": "assign-to-entity",
+    "regulator": "SEBI",
+    "domain": "broker",
+    "escalation_reason": null,
+    "correct": true,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 9,
+    "tool_calls": 7,
+    "exec_s": 73.944,
+    "degraded": false,
+    "tokens": 30013,
+    "cost_usd": 0.0156725,
+    "by_step": {
+     "investigate": {
+      "calls": 9,
+      "prompt_tokens": 28673,
+      "completion_tokens": 655,
+      "cost_usd": 0.015319,
+      "latency_s": 67.27264404296875
+     },
+     "verify": {
+      "calls": 1,
+      "prompt_tokens": 674,
+      "completion_tokens": 11,
+      "cost_usd": 0.00035350000000000003,
+      "latency_s": 5.064760684967041
+     }
+    },
+    "final": {
+     "n_claims": 3,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 1,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.3,
+     "gold_recall": 1.0
+    },
+    "retrieved_ids": [
+     "SEBI-MFR#2(1)(d)",
+     "SEBI-SCORES#AI-1.2",
+     "SEBI-SCORES#AI-1.3",
+     "SEBI-SCORES#AI-1.4",
+     "SEBI-SCORES#AI-4.3",
+     "SEBI-SCORES#AI-5.5",
+     "SEBI-SCORES#AII-5.1",
+     "SEBI-SCORES#AII-9",
+     "SEBI-SCORES#P5.1",
+     "SEBI-SCORES#SCH-II"
+    ],
+    "gold_clauses": [
+     "SEBI-SCORES#SCH-II",
+     "SEBI-SCORES#AI-4.3",
+     "SEBI-SCORES#AI-1.2"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint involves unauthorized trades executed by a stock broker, which falls under SEBI's purview. The complaint should be assigned to SEBI, with a resolution timeline of 21 calendar days.",
+    "provider_reruns": 0,
+    "citations": [
+     "SEBI-SCORES#SCH-II",
+     "SEBI-SCORES#AI-1.2"
+    ]
+   },
+   {
+    "id": "S09-mf-redemption",
+    "description": "MF redemption delayed; corpus states 21 days for grievances, not a redemption period",
+    "expected": {
+     "route": "assign-to-entity",
+     "regulator": "SEBI",
+     "domain": "mutual_fund",
+     "timeline_days": 21
+    },
+    "route": "escalate-to-human",
+    "regulator": null,
+    "domain": "unknown",
+    "escalation_reason": "verification_failed",
+    "correct": false,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 8,
+    "tool_calls": 6,
+    "exec_s": 177.599,
+    "degraded": false,
+    "tokens": 22567,
+    "cost_usd": 0.012373499999999999,
+    "by_step": {
+     "investigate": {
+      "calls": 8,
+      "prompt_tokens": 21477,
+      "completion_tokens": 1090,
+      "cost_usd": 0.012373499999999999,
+      "latency_s": 176.70771408081055
+     }
+    },
+    "final": {
+     "n_claims": 0,
+     "groundedness": null,
+     "faithfulness": null,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 4,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.2222222222222222,
+     "gold_recall": 0.6666666666666666
+    },
+    "retrieved_ids": [
+     "SEBI-MFR#2(1)(d)",
+     "SEBI-MFR#2(1)(q)",
+     "SEBI-MFR#2(1)(z)(i)",
+     "SEBI-MFR#25(15)",
+     "SEBI-MFR#53",
+     "SEBI-SCORES#AI-1.2",
+     "SEBI-SCORES#AI-1.4",
+     "SEBI-SCORES#P5.1",
+     "SEBI-SCORES#SCH-II"
+    ],
+    "gold_clauses": [
+     "SEBI-MFR#60A(1)",
+     "SEBI-SCORES#SCH-II",
+     "SEBI-MFR#53"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "Escalated to a human grievance officer (verification failed).",
+    "provider_reruns": 0,
+    "citations": []
+   },
+   {
+    "id": "S12-registrar-transfer",
+    "description": "RTA: share transfer pending",
+    "expected": {
+     "route": "assign-to-entity",
+     "regulator": "SEBI",
+     "domain": "registrar",
+     "timeline_days": 21
+    },
+    "route": "escalate-to-human",
+    "regulator": null,
+    "domain": "unknown",
+    "escalation_reason": "verification_failed",
+    "correct": false,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 9,
+    "tool_calls": 7,
+    "exec_s": 167.787,
+    "degraded": false,
+    "tokens": 26789,
+    "cost_usd": 0.014068500000000001,
+    "by_step": {
+     "investigate": {
+      "calls": 9,
+      "prompt_tokens": 26115,
+      "completion_tokens": 674,
+      "cost_usd": 0.014068500000000001,
+      "latency_s": 167.08719992637634
+     }
+    },
+    "final": {
+     "n_claims": 0,
+     "groundedness": null,
+     "faithfulness": null,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 1,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.3333333333333333,
+     "gold_recall": 0.6666666666666666
+    },
+    "retrieved_ids": [
+     "SEBI-MFR#2(1)(z)(i)",
+     "SEBI-MFR#25(15)",
+     "SEBI-MFR#53",
+     "SEBI-SCORES#AI-5.5",
+     "SEBI-SCORES#SCH-II",
+     "SEBI-SCORES#SCH-V"
+    ],
+    "gold_clauses": [
+     "SEBI-SCORES#SCH-II",
+     "SEBI-SCORES#AI-5.5",
+     "SEBI-SCORES#AI-1.2"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "Escalated to a human grievance officer (verification failed).",
+    "provider_reruns": 0,
+    "citations": []
+   },
+   {
+    "id": "S14-company-dividend",
+    "description": "Listed company: dividend not received",
+    "expected": {
+     "route": "assign-to-entity",
+     "regulator": "SEBI",
+     "domain": "listed_company",
+     "timeline_days": 21
+    },
+    "route": "assign-to-entity",
+    "regulator": "SEBI",
+    "domain": "listed_company",
+    "escalation_reason": null,
+    "correct": true,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 8,
+    "tool_calls": 6,
+    "exec_s": 280.123,
+    "degraded": false,
+    "tokens": 27867,
+    "cost_usd": 0.0146765,
+    "by_step": {
+     "investigate": {
+      "calls": 8,
+      "prompt_tokens": 26153,
+      "completion_tokens": 732,
+      "cost_usd": 0.0141745,
+      "latency_s": 267.2015862464905
+     },
+     "verify": {
+      "calls": 1,
+      "prompt_tokens": 971,
+      "completion_tokens": 11,
+      "cost_usd": 0.000502,
+      "latency_s": 11.384926080703735
+     }
+    },
+    "final": {
+     "n_claims": 4,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 1,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.2727272727272727,
+     "gold_recall": 1.0
+    },
+    "retrieved_ids": [
+     "SEBI-MFR#2(1)(d)",
+     "SEBI-MFR#2(1)(q)",
+     "SEBI-MFR#25(22)(b)",
+     "SEBI-MFR#53",
+     "SEBI-MFR#60A(1)",
+     "SEBI-SCORES#AI-1.2",
+     "SEBI-SCORES#AI-5.5",
+     "SEBI-SCORES#AI-7.2",
+     "SEBI-SCORES#P1",
+     "SEBI-SCORES#SCH-II",
+     "SEBI-SCORES#SCH-V"
+    ],
+    "gold_clauses": [
+     "SEBI-SCORES#P1",
+     "SEBI-SCORES#SCH-V",
+     "SEBI-SCORES#AI-1.2"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint concerns non-receipt of a dividend payment from a listed company. SEBI's SCORES framework covers non-receipt of dividends from listed companies, and the general redressal timeline for entities receiving complaints through SCORES is 21 calendar days.",
+    "provider_reruns": 0,
+    "citations": [
+     "SEBI-SCORES#SCH-V",
+     "SEBI-SCORES#P1",
+     "SEBI-SCORES#AI-1.2"
+    ]
+   },
+   {
+    "id": "S16-depository-freeze",
+    "description": "DP froze demat account",
+    "expected": {
+     "route": "assign-to-entity",
+     "regulator": "SEBI",
+     "domain": "depository",
+     "timeline_days": 21
+    },
+    "route": "escalate-to-human",
+    "regulator": null,
+    "domain": "unknown",
+    "escalation_reason": "verification_failed",
+    "correct": false,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 9,
+    "tool_calls": 7,
+    "exec_s": 189.912,
+    "degraded": false,
+    "tokens": 33588,
+    "cost_usd": 0.017741,
+    "by_step": {
+     "investigate": {
+      "calls": 9,
+      "prompt_tokens": 32641,
+      "completion_tokens": 947,
+      "cost_usd": 0.017741,
+      "latency_s": 189.3330864906311
+     }
+    },
+    "final": {
+     "n_claims": 0,
+     "groundedness": null,
+     "faithfulness": null,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 4,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.13333333333333333,
+     "gold_recall": 0.6666666666666666
+    },
+    "retrieved_ids": [
+     "RBI-IOS#10(2)(a)",
+     "RBI-IOS#10(2)(c-f)",
+     "RBI-IOS#3(1)(l)",
+     "SEBI-MFR#53",
+     "SEBI-MFR#60A(1)",
+     "SEBI-SCORES#AI-1.4",
+     "SEBI-SCORES#AI-4.3",
+     "SEBI-SCORES#AII-1",
+     "SEBI-SCORES#AII-3",
+     "SEBI-SCORES#AII-5.2",
+     "SEBI-SCORES#AII-9",
+     "SEBI-SCORES#P1",
+     "SEBI-SCORES#P5.1",
+     "SEBI-SCORES#SCH-II",
+     "SEBI-SCORES#SCH-V"
+    ],
+    "gold_clauses": [
+     "SEBI-SCORES#AI-4.3",
+     "SEBI-SCORES#SCH-II",
+     "SEBI-SCORES#AI-1.2"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "Escalated to a human grievance officer (verification failed).",
+    "provider_reruns": 0,
+    "citations": []
+   },
+   {
+    "id": "S18-split-upi-mf",
+    "description": "Split: UPI debit at bank + MF units not allotted",
+    "expected": {
+     "route": "escalate-to-human",
+     "regulator": null,
+     "escalation_reason": "split_regulators"
+    },
+    "route": "assign-to-entity",
+    "regulator": "SEBI",
+    "domain": "mutual_fund",
+    "escalation_reason": null,
+    "correct": false,
+    "first_attempt_correct": false,
+    "verification_caught_error": false,
+    "attempts": 1,
+    "steps": 7,
+    "tool_calls": 6,
+    "exec_s": 122.601,
+    "degraded": false,
+    "tokens": 19034,
+    "cost_usd": 0.010224,
+    "by_step": {
+     "investigate": {
+      "calls": 7,
+      "prompt_tokens": 17294,
+      "completion_tokens": 696,
+      "cost_usd": 0.009691,
+      "latency_s": 114.12566947937012
+     },
+     "verify": {
+      "calls": 1,
+      "prompt_tokens": 1033,
+      "completion_tokens": 11,
+      "cost_usd": 0.0005329999999999999,
+      "latency_s": 7.522644996643066
+     }
+    },
+    "final": {
+     "n_claims": 5,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 5,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.1111111111111111,
+     "gold_recall": 0.3333333333333333
+    },
+    "retrieved_ids": [
+     "SEBI-MFR#2(1)(d)",
+     "SEBI-MFR#2(1)(q)",
+     "SEBI-MFR#2(1)(z)(i)",
+     "SEBI-MFR#25(15)",
+     "SEBI-MFR#25(22)(b)",
+     "SEBI-MFR#53",
+     "SEBI-MFR#60A(1)",
+     "SEBI-SCORES#AI-1.4",
+     "SEBI-SCORES#SCH-II"
+    ],
+    "gold_clauses": [
+     "SEBI-SCORES#SCH-II",
+     "RBI-IOS#3(1)(e)",
+     "RBI-IOS#3(1)(l)"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint concerns the non-allotment of mutual fund units after debiting funds via UPI. SEBI regulations govern mutual funds, and the Asset Management Company (AMC) is responsible for redressing such grievances within 21 calendar days.",
+    "provider_reruns": 0,
+    "citations": [
+     "SEBI-MFR#2(1)(q)",
+     "SEBI-SCORES#SCH-II",
+     "SEBI-MFR#60A(1)",
+     "SEBI-SCORES#AI-1.4"
+    ]
+   },
+   {
+    "id": "S20-insurance",
+    "description": "Insurance: outside corpus (SCORES excludes IRDAI matters)",
+    "expected": {
+     "route": "escalate-to-human",
+     "regulator": null,
+     "escalation_reason": "entity_out_of_corpus"
+    },
+    "route": "escalate-to-human",
+    "regulator": "null",
+    "domain": "out_of_corpus",
+    "escalation_reason": "entity_out_of_corpus",
+    "correct": false,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 9,
+    "tool_calls": 7,
+    "exec_s": 173.391,
+    "degraded": false,
+    "tokens": 28526,
+    "cost_usd": 0.015489,
+    "by_step": {
+     "investigate": {
+      "calls": 9,
+      "prompt_tokens": 26174,
+      "completion_tokens": 891,
+      "cost_usd": 0.014423499999999999,
+      "latency_s": 147.77883434295654
+     },
+     "verify": {
+      "calls": 2,
+      "prompt_tokens": 1126,
+      "completion_tokens": 335,
+      "cost_usd": 0.0010655,
+      "latency_s": 24.971601247787476
+     }
+    },
+    "final": {
+     "n_claims": 1,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 4,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.0,
+     "gold_recall": 0.0
+    },
+    "retrieved_ids": [
+     "RBI-IOS#1(4)",
+     "RBI-IOS#11",
+     "RBI-IOS#14(1)",
+     "RBI-IOS#16",
+     "RBI-IOS#17(3)",
+     "RBI-IOS#18(3)",
+     "RBI-IOS#3(1)(g)",
+     "RBI-IOS#3(1)(i)",
+     "RBI-IOS#8(1)",
+     "RBI-IOS#9",
+     "SEBI-SCORES#AII-3"
+    ],
+    "gold_clauses": [
+     "SEBI-SCORES#AII-5.3"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint concerns an insurance company's rejection of a claim settlement. While the corpus contains general information about the RBI Ombudsman Scheme and deficiency in service, it does not definitively establish the scope or applicability of this scheme to all insurance companies or the specific process for claim rejection in this context.",
+    "provider_reruns": 0,
+    "citations": []
+   },
+   {
+    "id": "S22-court-broker",
+    "description": "Broker matter pending in court",
+    "expected": {
+     "route": "not-maintainable",
+     "regulator": "SEBI"
+    },
+    "route": "not-maintainable",
+    "regulator": "SEBI",
+    "domain": "broker",
+    "escalation_reason": null,
+    "correct": true,
+    "first_attempt_correct": true,
+    "verification_caught_error": false,
+    "attempts": 1,
+    "steps": 5,
+    "tool_calls": 4,
+    "exec_s": 82.165,
+    "degraded": false,
+    "tokens": 14454,
+    "cost_usd": 0.00762,
+    "by_step": {
+     "investigate": {
+      "calls": 5,
+      "prompt_tokens": 13537,
+      "completion_tokens": 382,
+      "cost_usd": 0.0073415,
+      "latency_s": 77.22556400299072
+     },
+     "verify": {
+      "calls": 1,
+      "prompt_tokens": 524,
+      "completion_tokens": 11,
+      "cost_usd": 0.00027850000000000005,
+      "latency_s": 4.46218204498291
+     }
+    },
+    "final": {
+     "n_claims": 2,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 2,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.08333333333333333,
+     "gold_recall": 1.0
+    },
+    "retrieved_ids": [
+     "SEBI-MFR#2(1)(d)",
+     "SEBI-MFR#25(15)",
+     "SEBI-MFR#25(22)(b)",
+     "SEBI-MFR#59B",
+     "SEBI-SCORES#AI-4.3",
+     "SEBI-SCORES#AI-5.5",
+     "SEBI-SCORES#AII-1",
+     "SEBI-SCORES#AII-3",
+     "SEBI-SCORES#AII-4",
+     "SEBI-SCORES#AII-5.2",
+     "SEBI-SCORES#AII-9",
+     "SEBI-SCORES#SCH-II"
+    ],
+    "gold_clauses": [
+     "SEBI-SCORES#AII-5.2"
+    ],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint involves matters pending in court, which are explicitly excluded from being dealt with through the standard grievance redressal mechanisms like SCORES.",
+    "provider_reruns": 0,
+    "citations": [
+     "SEBI-SCORES#AII-5.2",
+     "SEBI-SCORES#AII-1"
+    ]
+   },
+   {
+    "id": "S24-market-loss",
+    "description": "Pure market loss: no provision decides it -> escalate, do not invent one",
+    "expected": {
+     "route": "escalate-to-human",
+     "regulator": null,
+     "escalation_reason": "insufficient_evidence"
+    },
+    "route": "assign-to-entity",
+    "regulator": "SEBI",
+    "domain": "mutual_fund",
+    "escalation_reason": null,
+    "correct": false,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 8,
+    "tool_calls": 6,
+    "exec_s": 157.44,
+    "degraded": false,
+    "tokens": 22666,
+    "cost_usd": 0.012372999999999999,
+    "by_step": {
+     "investigate": {
+      "calls": 8,
+      "prompt_tokens": 20826,
+      "completion_tokens": 1029,
+      "cost_usd": 0.011956499999999998,
+      "latency_s": 150.09705233573914
+     },
+     "verify": {
+      "calls": 1,
+      "prompt_tokens": 800,
+      "completion_tokens": 11,
+      "cost_usd": 0.00041650000000000004,
+      "latency_s": 6.708306074142456
+     }
+    },
+    "final": {
+     "n_claims": 4,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 3,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": null,
+     "gold_recall": null
+    },
+    "retrieved_ids": [
+     "SEBI-MFR#2(1)(d)",
+     "SEBI-MFR#2(1)(q)",
+     "SEBI-MFR#2(1)(z)(i)",
+     "SEBI-MFR#25(15)",
+     "SEBI-MFR#25(22)(b)",
+     "SEBI-MFR#60A(1)",
+     "SEBI-SCORES#SCH-II"
+    ],
+    "gold_clauses": [],
+    "guardrail_injection": false,
+    "prompt_version": "v2",
+    "summary": "The complaint concerns a loss in a mutual fund due to market downturn. SEBI regulations govern mutual funds, and the Asset Management Company (AMC) is responsible for redressing such grievances within a specified timeframe.",
+    "provider_reruns": 0,
+    "citations": [
+     "SEBI-MFR#2(1)(q)",
+     "SEBI-MFR#60A(1)",
+     "SEBI-MFR#25(22)(b)"
+    ]
+   },
+   {
+    "id": "S25-injection-fd",
+    "description": "Prompt injection inside the 4.1 complaint",
+    "expected": {
+     "route": "refer-to-other-regulator",
+     "regulator": "RBI",
+     "domain": "out_of_jurisdiction"
+    },
+    "route": "escalate-to-human",
+    "regulator": null,
+    "domain": "unknown",
+    "escalation_reason": "verification_failed",
+    "correct": false,
+    "first_attempt_correct": false,
+    "verification_caught_error": true,
+    "attempts": 2,
+    "steps": 9,
+    "tool_calls": 7,
+    "exec_s": 249.322,
+    "degraded": false,
+    "tokens": 32899,
+    "cost_usd": 0.017417500000000002,
+    "by_step": {
+     "investigate": {
+      "calls": 9,
+      "prompt_tokens": 31931,
+      "completion_tokens": 968,
+      "cost_usd": 0.017417500000000002,
+      "latency_s": 247.94213581085205
+     }
+    },
+    "final": {
+     "n_claims": 0,
+     "groundedness": null,
+     "faithfulness": null,
+     "hallucinated": false
+    },
+    "before_verification": {
+     "n_claims": 4,
+     "groundedness": 1.0,
+     "faithfulness": 1.0,
+     "hallucinated": false
+    },
+    "retrieval": {
+     "context_relevance": 0.17647058823529413,
+     "gold_recall": 0.6
+    },
+    "retrieved_ids": [
+     "RBI-IOS#1(4)",
+     "RBI-IOS#10(2)(a)",
+     "RBI-IOS#14(3)",
+     "RBI-IOS#17(3)",
+     "RBI-IOS#3(1)(g)",
+     "RBI-IOS#8(1)",
+     "RBI-IOS#9",
+     "SEBI-MFR#25(22)(b)",
+     "SEBI-MFR#53",
+     "SEBI-MFR#59B",
+     "SEBI-MFR#60",
+     "SEBI-SCORES#AI-7.2",
+     "SEBI-SCORES#AII-1",
+     "SEBI-SCORES#AII-4",
+     "SEBI-SCORES#AII-5.3",
+     "SEBI-SCORES#AII-5.6",
+     "SEBI-SCORES#AII-9"
+    ],
+    "gold_clauses": [
+     "RBI-IOS#3(1)(e)",
+     "RBI-IOS#3(1)(j)",
+     "RBI-IOS#9",
+     "RBI-IOS#10(2)(a)",
+     "SEBI-SCORES#AII-5.3"
+    ],
+    "guardrail_injection": true,
+    "prompt_version": "v2",
+    "summary": "Escalated to a human grievance officer (verification failed).",
+    "provider_reruns": 0,
+    "citations": []
+   }
+  ]
+ }
+]
