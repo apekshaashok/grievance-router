@@ -9,13 +9,21 @@ import json
 import random
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 from .agents.policy import decide
 from .config import cfg
 
 app = FastAPI(title="stub-llm")
 _state = {"fail": bool(cfg.STUB_FAIL)}
+STUB_CALLS = Counter("stub_llm_requests_total", "Requests to the stub model", ["status"])
+STUB_LAT = Histogram("stub_llm_latency_seconds", "Stub model latency", buckets=(0.25, 0.5, 0.75, 1, 1.5, 2, 3, 5))
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get("/healthz")
@@ -33,8 +41,12 @@ def admin_fail(on: bool = True):
 async def chat(request: Request):
     body = await request.json()
     if _state["fail"]:
+        STUB_CALLS.labels("503").inc()
         return JSONResponse({"error": "stub is set to fail"}, status_code=503)
-    await asyncio.sleep(cfg.STUB_DELAY_MS / 1000 * random.uniform(0.8, 1.2))
+    delay = cfg.STUB_DELAY_MS / 1000 * random.uniform(0.8, 1.2)
+    await asyncio.sleep(delay)
+    STUB_CALLS.labels("200").inc()
+    STUB_LAT.observe(delay)
     msgs = body["messages"]
     system, user = msgs[0]["content"], msgs[-1]["content"]
     text = json.dumps(decide(system, json.loads(user)))

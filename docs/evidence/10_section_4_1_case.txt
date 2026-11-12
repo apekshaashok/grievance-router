@@ -1,0 +1,14 @@
+POST /v1/complaints -> 202 {"run_id": "5af0feddeebf", "status": "queued", "cache_hit": false, "status_url": "/v1/runs/5af0feddeebf", "guardrails": {"injection_detected": false, "injection_snippets": [], "toxic_input": false, "fields": []}}
+finished in 7.7s
+
+ROUTE      refer-to-other-regulator  regulator=RBI  timeline_days=None
+SUMMARY    This complaint concerns a product of an RBI-regulated entity, which falls under the Reserve Bank - Integrated Ombudsman Scheme, 2021 and not under SEBI's SCORES framework. Refer it to the RBI Ombudsman.
+  basis [RBI-IOS#3(1)(e)] "bank" means a 'banking company', a 'corresponding new bank', a 'Regional Rural Bank', 'State Bank of India' a
+  basis [RBI-IOS#3(1)(j)] "Regulated Entity" means a bank or a Non-Banking Financial Company, or a System Participant or a Credit Inform
+  basis [RBI-IOS#9] Any customer aggrieved by an act or omission of a Regulated Entity resulting in deficiency in service may file
+  basis [SEBI-SCORES#AII-5.3] Complaints falling under the purview of other regulatory bodies such as Reserve Bank of India, (RBI), Insuranc
+  basis [RBI-IOS#10(2)(a)] A complaint under the Scheme shall not lie unless the complainant had, before making a complaint under the Sch
+  basis [complaint] I invested in a fixed deposit through my bank's app.
+CITATIONS  RBI-IOS#3(1)(e), RBI-IOS#3(1)(j), RBI-IOS#9, SEBI-SCORES#AII-5.3, RBI-IOS#10(2)(a)  (each resolves to retrieved text)
+prompt=v2 steps=8 tool_calls=7 verification_attempts=1 degraded=False
+run id 5af0feddeebf  (python scripts/demo.py trace 5af0feddeebf)

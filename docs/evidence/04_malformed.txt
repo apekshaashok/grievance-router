@@ -1,0 +1,36 @@
+POST /v1/complaints -> 422 {"error": "validation_failed", "quarantine_id": "b19f6cad1835", "agent_started": false, "errors": [{"field": "investor_ref", "message": "String should match pattern '^INV[0-9]{6}$'", "type": "string_pattern_mismatch"}, {"field": "complaint_text", "message": "String should have at least 20 characters
+-> no run id issued, nothing queued; see GET /v1/quarantine and the runs_submitted_total metric
+{
+ "records": [
+  {
+   "quarantine_id": "b19f6cad1835",
+   "at": 1794494104.4978688,
+   "client": "192.168.65.1",
+   "correlation_id": "7aefbdef79ef444a",
+   "record": {
+    "investor_ref": "bad",
+    "channel": "fax",
+    "complaint_date": "2026-11-12",
+    "complaint_text": "short"
+   },
+   "errors": [
+    {
+     "field": "investor_ref",
+     "message": "String should match pattern '^INV[0-9]{6}$'",
+     "type": "string_pattern_mismatch"
+    },
+    {
+     "field": "complaint_text",
+     "message": "String should have at least 20 characters",
+     "type": "string_too_short"
+    },
+    {
+     "field": "channel",
+     "message": "Input should be 'web', 'email', 'phone' or 'letter'",
+     "type": "literal_error"
+    }
+   ]
+  }
+ ]
+}
+runs_submitted_total before: runs_submitted_total 3.0 | after: runs_submitted_total 3.0 | queue depth: 0

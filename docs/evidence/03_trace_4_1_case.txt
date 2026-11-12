@@ -1,0 +1,21 @@
+run 5af0feddeebf correlation_id=dda4704ae4d94a31 prompt_version=v2
+   0.00s START  {"prompt_version": "v2", "index_built_at": "2026-11-12T14:34:13Z", "n_chunks": 64, "guardrail_flags": {"injection_detected": false, "injection_snippet
+   0.72s LLM   investigate  openai_compat  tok 1322+15 $0.000683 0.718s degraded=False
+   0.72s TOOL  get_complaint_fields {} -> -  0.00061s
+   1.61s LLM   investigate  openai_compat  tok 1442+50 $0.000796 0.8809s degraded=False
+   1.61s TOOL  search_corpus        {"query": "I invested in a fixed deposit through my bank's app. The interest credited is l -> SEBI-SCORES#AII-10,SEBI-SCORES#P5.1,SEBI-SCORES#AI-1.2,SEBI-SCORES#AI-3.1  0.001s
+   2.30s LLM   investigate  openai_compat  tok 2150+54 $0.001156 0.689s degraded=False
+   2.30s TOOL  list_clauses         {"regulator": "SEBI", "kind": "maintainability", "query": "complaints not dealt through SC -> SEBI-SCORES#AII-5.3,SEBI-SCORES#AII-5.1,SEBI-SCORES#AII-5.4,SEBI-SCORES#AII-5.5  0.00129s
+   3.21s LLM   investigate  openai_compat  tok 2886+48 $0.001515 0.9014s degraded=False
+   3.21s TOOL  search_corpus        {"query": "bank regulated entity deficiency in service customer complaint ombudsman bank f -> RBI-IOS#3(1)(f),RBI-IOS#9,RBI-IOS#10(2)(a),RBI-IOS#10(1)  0.00059s
+   4.16s LLM   investigate  openai_compat  tok 3775+55 $0.001970 0.955s degraded=False
+   4.17s TOOL  list_clauses         {"regulator": "RBI", "kind": "scope", "query": "bank regulated entity deficiency in servic -> RBI-IOS#9,RBI-IOS#8(1),RBI-IOS#3(1)(g),RBI-IOS#3(1)(j)  0.00078s
+   5.05s LLM   investigate  openai_compat  tok 4242+58 $0.002208 0.8852s degraded=False
+   5.06s TOOL  list_clauses         {"regulator": "RBI", "kind": "maintainability", "query": "complaint shall not lie pending  -> RBI-IOS#10(2)(a),RBI-IOS#10(2)(c-f),RBI-IOS#10(2)(b),RBI-IOS#10(1)  0.00052s
+   6.02s LLM   investigate  openai_compat  tok 4823+29 $0.002455 0.9628s degraded=False
+   6.02s TOOL  get_clause           {"ids": ["RBI-IOS#3(1)(e)", "RBI-IOS#3(1)(i)", "RBI-IOS#3(1)(l)"]} -> RBI-IOS#3(1)(e),RBI-IOS#3(1)(i),RBI-IOS#3(1)(l)  0.00032s
+   6.77s LLM   investigate  openai_compat  tok 5363+698 $0.003729 0.7447s degraded=False
+   7.51s LLM   verify       openai_compat  tok 1473+8 $0.000749 0.7371s degraded=False
+   7.51s VERIFY attempt=1 passed=True issues=[]
+   7.51s END    {"route": "refer-to-other-regulator", "escalated": false, "degraded": false, "attempts": 1, "exec_s": 7.5111}
+usage: {"calls": 9, "prompt_tokens": 27476, "completion_tokens": 1015, "cost_usd": 0.0152605, "latency_s": 7.47409725189209}

@@ -65,7 +65,7 @@ def run_variant(label, overrides, scenarios, verbose=False):
                 rows.append(row)
                 if verbose:
                     print(f"  {'OK ' if row['correct'] else 'BAD'} {sc['id']:30} {row['route']:26} {row['regulator'] or '-':5} "
-                          f"steps={row['steps']} attempts={row['attempts']}")
+                          f"steps={row['steps']} attempts={row['attempts']}", flush=True)
     finally:
         for k, v in saved.items():
             if v is None:

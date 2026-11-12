@@ -1,0 +1,40 @@
+POST /v1/complaints -> 202 {"run_id": "36c8fb1577ea", "status": "queued", "cache_hit": false, "status_url": "/v1/runs/36c8fb1577ea", "guardrails": {"injection_detected": false, "injection_snippets": [], "toxic_input": false, "fields": []}}
+finished in 9.2s
+
+ROUTE      assign-to-entity  regulator=SEBI  timeline_days=21
+SUMMARY    Assign to the mutual fund / asset management company for redressal within 21 calendar days under the SEBI framework.
+  basis [SEBI-MFR#2(1)(z)(i)] "unit holder" means a person holding unit in a scheme of a mutual fund.
+  basis [SEBI-SCORES#SCH-II] Mutual Funds: Association of Mutual Funds in India (AMFI).
+  basis [SEBI-SCORES#P1] SEBI Complaint Redressal System (SCORES) is a centralised web based complaint redressal facilitation platform 
+  basis [SEBI-MFR#60A(1)] The asset management company shall redress investor grievances promptly but not later than twenty-one calendar
+  basis [complaint] The fund house debited my SIP instalment but the units have not been allotted to my folio.
+CITATIONS  SEBI-MFR#2(1)(z)(i), SEBI-SCORES#SCH-II, SEBI-SCORES#P1, SEBI-MFR#60A(1)  (each resolves to retrieved text)
+prompt=v2 steps=10 tool_calls=8 verification_attempts=2 degraded=False
+run id 36c8fb1577ea  (python scripts/demo.py trace 36c8fb1577ea)
+-> open the trace: the first verify FAILED (citation does not resolve), then the agent searched again and the second verify passed
+run 36c8fb1577ea correlation_id=1c6fb872a21a4638 prompt_version=v2
+   0.00s START  {"prompt_version": "v2", "index_built_at": "2026-11-12T14:35:55Z", "n_chunks": 64, "guardrail_flags": {"injection_detected": false, "injection_snippet
+   0.69s LLM   investigate  openai_compat  tok 1308+15 $0.000677 0.6921s degraded=False
+   0.70s TOOL  get_complaint_fields {} -> -  0.00021s
+   1.38s LLM   investigate  openai_compat  tok 1414+39 $0.000766 0.6852s degraded=False
+   1.42s TOOL  search_corpus        {"query": "The fund house debited my SIP instalment but the units have not been allotted t -> RBI-IOS#18(3),SEBI-MFR#2(1)(z)(i),RBI-IOS#9,SEBI-MFR#53  0.03557s
+   2.31s LLM   investigate  openai_compat  tok 2217+54 $0.001190 0.8885s degraded=False
+   2.34s TOOL  list_clauses         {"regulator": "RBI", "kind": "maintainability", "query": "complaints not dealt through SCO -> RBI-IOS#10(2)(a),RBI-IOS#10(1),RBI-IOS#10(2)(b),RBI-IOS#10(2)(c-f)  0.02572s
+   3.19s LLM   investigate  openai_compat  tok 3378+48 $0.001761 0.8523s degraded=False
+   3.22s TOOL  search_corpus        {"query": "mutual fund / asset management company investor grievance complaint SCORES enti -> SEBI-MFR#60A(1),SEBI-SCORES#AII-5.3,SEBI-SCORES#AII-5.5,SEBI-MFR#25(22)(b)  0.03054s
+   4.15s LLM   investigate  openai_compat  tok 4065+55 $0.002115 0.9317s degraded=False
+   4.15s TOOL  list_clauses         {"regulator": "SEBI", "kind": "scope", "query": "mutual fund / asset management company in -> SEBI-SCORES#P1,SEBI-SCORES#AI-5.5,SEBI-MFR#2(1)(z)(i),SEBI-SCORES#SCH-II  0.00022s
+   5.00s LLM   investigate  openai_compat  tok 4863+58 $0.002518 0.8499s degraded=False
+   5.01s TOOL  list_clauses         {"regulator": "SEBI", "kind": "maintainability", "query": "complaint shall not lie pending -> SEBI-SCORES#AII-3,SEBI-SCORES#AII-4,SEBI-SCORES#AII-5.2,SEBI-SCORES#AII-5.4  0.00052s
+   5.76s LLM   investigate  openai_compat  tok 5596+55 $0.002880 0.7506s degraded=False
+   5.79s TOOL  list_clauses         {"regulator": "SEBI", "kind": "servicing", "query": "mutual fund / asset management compan -> SEBI-MFR#60A(1),SEBI-SCORES#AI-1.2,SEBI-MFR#25(22)(b),SEBI-SCORES#P5.1  0.02889s
+   6.72s LLM   investigate  openai_compat  tok 5951+25 $0.003013 0.936s degraded=False
+   6.73s TOOL  get_clause           {"ids": ["SEBI-SCORES#AII-1", "SEBI-SCORES#AII-5.1"]} -> SEBI-SCORES#AII-1,SEBI-SCORES#AII-5.1  0.00035s
+   7.44s LLM   investigate  openai_compat  tok 6334+459 $0.003855 0.7129s degraded=False
+   7.44s FAULT_INJECTED {"fault": "bad_citation"}
+   7.44s VERIFY attempt=1 passed=False issues=['citation SEBI-SCORES#AI-9.9 does not resolve to any retrieved passage']
+   8.19s LLM   investigate  openai_compat  tok 6396+459 $0.003887 0.7459s degraded=False
+   9.12s LLM   verify       openai_compat  tok 1042+8 $0.000533 0.9229s degraded=False
+   9.12s VERIFY attempt=2 passed=True issues=[]
+   9.12s END    {"route": "assign-to-entity", "escalated": false, "degraded": false, "attempts": 2, "exec_s": 9.1191}
+usage: {"calls": 11, "prompt_tokens": 42564, "completion_tokens": 1275, "cost_usd": 0.0231945, "latency_s": 8.967927694320679}

@@ -1,0 +1,11 @@
+POST /v1/complaints -> 202 {"run_id": "c3fc78cca7b1", "status": "queued", "cache_hit": false, "status_url": "/v1/runs/c3fc78cca7b1", "guardrails": {"injection_detected": false, "injection_snippets": [], "toxic_input": false, "fields": []}}
+finished in 5.1s
+
+ROUTE      escalate-to-human  regulator=None  timeline_days=None
+SUMMARY    This complaint appears to concern insurance, which is outside the regulatory documents indexed. Escalating to a human.
+ESCALATION entity_out_of_corpus: The complaint concerns insurance; no framework in the indexed corpus covers it.
+  basis [SEBI-SCORES#AII-5.3] Complaints falling under the purview of other regulatory bodies such as Reserve Bank of India, (RBI), Insuranc
+  basis [complaint] My insurance company has rejected my claim settlement even though all premiums were paid on time.
+CITATIONS  SEBI-SCORES#AII-5.3  (each resolves to retrieved text)
+prompt=v2 steps=5 tool_calls=4 verification_attempts=1 degraded=False
+run id c3fc78cca7b1  (python scripts/demo.py trace c3fc78cca7b1)

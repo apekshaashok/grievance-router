@@ -171,6 +171,11 @@
      "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[1m]))",
      "legendFormat": "{{name}}",
      "refId": "A"
+    },
+    {
+     "expr": "sum by (job, instance) (rate(process_cpu_seconds_total{job=~\"api|worker|stub-llm\"}[1m]))",
+     "legendFormat": "{{job}} {{instance}}",
+     "refId": "B"
     }
    ]
   },
@@ -199,6 +204,11 @@
      "expr": "sum by (name) (container_memory_working_set_bytes{name!=\"\"})",
      "legendFormat": "{{name}}",
      "refId": "A"
+    },
+    {
+     "expr": "sum by (job, instance) (process_resident_memory_bytes{job=~\"api|worker|stub-llm\"})",
+     "legendFormat": "{{job}} {{instance}}",
+     "refId": "B"
     }
    ]
   },
@@ -532,7 +542,7 @@
   },
   {
    "id": 18,
-   "title": "Worker uptime (s)",
+   "title": "Container uptime (s)",
    "type": "timeseries",
    "datasource": {
     "type": "prometheus",
@@ -552,8 +562,8 @@
    },
    "targets": [
     {
-     "expr": "time() - process_start_time_seconds{job=\"worker\"}",
-     "legendFormat": "{{instance}}",
+     "expr": "time() - process_start_time_seconds{job=~\"api|worker|stub-llm\"}",
+     "legendFormat": "{{job}} {{instance}}",
      "refId": "A"
     }
    ]

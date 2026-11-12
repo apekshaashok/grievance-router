@@ -1,0 +1,30 @@
+$ docker compose stop stub-llm
+ Container grievance-router-stub-llm-1 Stopped 
+$ python3 scripts/demo.py fd
+POST /v1/complaints -> 202 {"run_id": "ee152bcbe1aa", "status": "queued", "cache_hit": false, "status_url": "/v1/runs/ee152bcbe1aa", "guardrails": {"injection_detected": false, "injection_snippets": [], "toxic_input": false, "fields": []}}
+finished in 2.1s
+
+ROUTE      refer-to-other-regulator  regulator=RBI  timeline_days=None
+SUMMARY    This complaint concerns a product of an RBI-regulated entity, which falls under the Reserve Bank - Integrated Ombudsman Scheme, 2021 and not under SEBI's SCORES framework. Refer it to the RBI Ombudsman.
+  basis [RBI-IOS#3(1)(e)] "bank" means a 'banking company', a 'corresponding new bank', a 'Regional Rural Bank', 'State Bank of India' a
+  basis [RBI-IOS#3(1)(j)] "Regulated Entity" means a bank or a Non-Banking Financial Company, or a System Participant or a Credit Inform
+  basis [RBI-IOS#9] Any customer aggrieved by an act or omission of a Regulated Entity resulting in deficiency in service may file
+  basis [SEBI-SCORES#AII-5.3] Complaints falling under the purview of other regulatory bodies such as Reserve Bank of India, (RBI), Insuranc
+  basis [RBI-IOS#10(2)(a)] A complaint under the Scheme shall not lie unless the complainant had, before making a complaint under the Sch
+  basis [complaint] I invested in a fixed deposit through my bank's app.
+CITATIONS  RBI-IOS#3(1)(e), RBI-IOS#3(1)(j), RBI-IOS#9, SEBI-SCORES#AII-5.3, RBI-IOS#10(2)(a)  (each resolves to retrieved text)
+prompt=v2 steps=8 tool_calls=7 verification_attempts=1 degraded=True
+run id ee152bcbe1aa  (python scripts/demo.py trace ee152bcbe1aa)
+
+$ worker log (llm failures, breaker)
+worker-1  | {"ts": "2026-11-12T14:36:40.983Z", "level": "WARNING", "service": "worker", "logger": "llm", "event": "llm call failed", "correlation_id": "5c857596314344c8", "run_id": "ee152bcbe1aa", "step": "investigate", "attempt": 1, "error": "ConnectError: [E
+worker-1  | {"ts": "2026-11-12T14:36:41.533Z", "level": "WARNING", "service": "worker", "logger": "llm", "event": "llm call failed", "correlation_id": "5c857596314344c8", "run_id": "ee152bcbe1aa", "step": "investigate", "attempt": 2, "error": "ConnectError: [E
+worker-1  | {"ts": "2026-11-12T14:36:42.669Z", "level": "WARNING", "service": "worker", "logger": "llm", "event": "circuit breaker opened", "correlation_id": "5c857596314344c8", "run_id": "ee152bcbe1aa", "consecutive_failures": 3}
+worker-1  | {"ts": "2026-11-12T14:36:42.669Z", "level": "WARNING", "service": "worker", "logger": "llm", "event": "llm call failed", "correlation_id": "5c857596314344c8", "run_id": "ee152bcbe1aa", "step": "investigate", "attempt": 3, "error": "ConnectError: [E
+$ circuit_breaker_open on the worker: ['circuit_breaker_open 1.0', 'degraded_runs_total 1.0']
+$ docker compose start stub-llm
+ Container grievance-router-stub-llm-1 Started 
+$ python3 scripts/demo.py fd   (after cooldown: breaker half-opens, closes on success)
+ROUTE      refer-to-other-regulator  regulator=RBI  timeline_days=None
+prompt=v2 steps=8 tool_calls=7 verification_attempts=1 degraded=False
+circuit_breaker_open now: ['circuit_breaker_open 0.0']

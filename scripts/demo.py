@@ -85,8 +85,11 @@ def trace(run_id):
 def main():
     a = [x for x in sys.argv[1:] if not x.startswith("--") and x != URL]
     item = a[0] if a else "fd"
-    if item in ("fd", "valid"):
+    if item == "fd":
         run(FD, entity_name="Example Bank")
+    elif item == "valid":
+        run("My stock broker executed unauthorised trades in my trading account while I was abroad and refuses to reverse them.",
+            entity_name="Example Broking", prior_complaint_to_entity=True, prior_complaint_date=BASE["complaint_date"])
     elif item == "trace":
         trace(a[1])
     elif item == "malformed":

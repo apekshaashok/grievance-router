@@ -1,0 +1,13 @@
+POST /v1/complaints -> 202 {"run_id": "6a70ca7afa04", "status": "queued", "cache_hit": false, "status_url": "/v1/runs/6a70ca7afa04", "guardrails": {"injection_detected": false, "injection_snippets": [], "toxic_input": false, "fields": []}}
+finished in 7.7s
+
+ROUTE      assign-to-entity  regulator=SEBI  timeline_days=21
+SUMMARY    Assign to the stock broker for redressal within 21 calendar days under the SEBI framework.
+  basis [SEBI-SCORES#AI-4.3] Stock Brokers and Depository Participants shall also obtain SCORES authentication.
+  basis [SEBI-SCORES#SCH-II] Stock Brokers: Stock Exchanges.
+  basis [SEBI-SCORES#P1] SEBI Complaint Redressal System (SCORES) is a centralised web based complaint redressal facilitation platform 
+  basis [SEBI-SCORES#AI-1.2] All Entities who are in receipt of the complaints of the investors ("Complaint") through SCORES, shall resolve
+  basis [complaint] My stock broker executed unauthorised trades in my trading account while I was abroad and refuses to reverse t
+CITATIONS  SEBI-SCORES#AI-4.3, SEBI-SCORES#SCH-II, SEBI-SCORES#P1, SEBI-SCORES#AI-1.2  (each resolves to retrieved text)
+prompt=v2 steps=8 tool_calls=7 verification_attempts=1 degraded=False
+run id 6a70ca7afa04  (python scripts/demo.py trace 6a70ca7afa04)

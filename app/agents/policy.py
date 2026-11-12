@@ -80,7 +80,17 @@ def _attempted_ids(obs) -> set:
 
 
 def _sentences(text: str) -> List[str]:
-    return [s.strip() for s in SENT_SPLIT.split(text.strip()) if s.strip()]
+    """Sentences, split also at ';' and ':' so a list item can be cited alone. A short fragment ending in ':' (a table
+    row label such as "Stock Brokers:") stays joined to what follows, otherwise the claim would be the label alone."""
+    out: List[str] = []
+    for part in (p.strip() for p in SENT_SPLIT.split(text.strip())):
+        if not part:
+            continue
+        if out and out[-1].endswith(":") and len(out[-1]) < 40:
+            out[-1] = out[-1] + " " + part
+        else:
+            out.append(part)
+    return out
 
 
 def _best_sentence(text: str, terms: List[str]) -> str:

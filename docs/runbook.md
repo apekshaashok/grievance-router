@@ -12,6 +12,11 @@ docker compose logs worker | grep -E "llm call failed|circuit breaker"
 curl -s localhost:8081/healthz              # stub; for a real provider, call its API with curl
 curl -s localhost:9090/api/v1/query --data-urlencode 'query=max(circuit_breaker_open)'
 ```
+A variant with a real model: runs escalate with `provider_unavailable` or `verification_failed` while the provider is up and
+the trace shows model replies with empty content or cut-off JSON (`completion_tokens` at `LLM_MAX_TOKENS`). That is the
+context window or the output limit, not an outage (INC-004): check the largest `prompt_tokens` in `GET /v1/runs/{id}/trace`
+against the model's context (Ollama defaults to 4,096 tokens; use the 16k alias in the README).
+
 **Recover**: fix the cause (quota, key in `.env`, network, provider outage; for the stub `curl -XPOST 'localhost:8081/admin/fail?on=false'`
 or `docker compose start stub-llm`). The breaker half-opens after `BREAKER_COOLDOWN_S` and closes on the first successful call; no restart
 is needed. Degraded answers were still verified against the corpus, but have a human look at runs flagged `degraded` in the period

@@ -43,15 +43,19 @@ after `STALE_RUN_S`, at most twice, then marked `failed`).
 ## The agents (A1, A2, A3)
 
 * **Investigator** (LLM + tools, LangGraph node loop). Chooses tools: `search_corpus`, `list_clauses`, `get_clause`,
-  `get_complaint_fields`. It must identify the product and entity, search again with a query built from that, check what the
-  candidate framework covers (scope), what bars the complaint (maintainability), the timeline (servicing), and follow every
-  "See clause X" cross reference. Bounded by `MAX_STEPS`, `MAX_TOOL_CALLS`, `RUN_TIMEOUT_S`.
+  `get_complaint_fields`. Following section 5 of the brief it (1) searches with the complaint text, (2) asks whether another
+  provision modifies the framework that search pointed at, or the one the complainant named (its maintainability /
+  exclusion clauses), (3) searches again with a query built from the product and entity it identified, filtered to the
+  framework that covers them, checks that framework's scope, maintainability and servicing clauses, and follows cross
+  references. Bounded by `MAX_STEPS` (10), `MAX_TOOL_CALLS` (10), `RUN_TIMEOUT_S` (90 s); a repeated identical tool call is
+  answered with a "duplicate call" observation instead of being re-run, and when two steps remain the model is told to finish
+  or escalate (both added after a real model looped, INC-003).
 * **Verifier/Router** (separate prompt, no tools, the only component that can release an answer). Deterministic gate: the
   determination parses against the contract; every citation resolves to a retrieved passage; every claim is supported by the
   passage it cites (>=70% of content words, all numbers present); the route follows from what was cited (assign-to-entity needs a
   servicing passage that states the timeline and a scope passage of that regulator; refer-to-other-regulator needs the other
-  regulator's scope passage; not-maintainable needs a maintainability passage; a split needs scope passages from two
-  regulators); and the output filter passes. An optional model judge can add objections, never remove them.
+  regulator's scope passage, and if the complainant addressed SEBI, the SEBI clause that excludes the matter; not-maintainable
+  needs a maintainability passage; a split needs scope passages from two regulators); and the output filter passes. An optional model judge can add objections, never remove them.
 * **Hand-off**: the Investigator's proposal plus the complete set of retrieved passages. On failure: retry with the issue list as
   hints (attempt 2, `MAX_VERIFY_ATTEMPTS`), then escalate `verification_failed`.
 * **If an agent fails mid-run**: provider down -> retries with backoff -> breaker -> rule-engine fallback (run flagged
@@ -61,14 +65,33 @@ after `STALE_RUN_S`, at most twice, then marked `failed`).
 
 ## Retrieval design (L1) - how chunking addresses section 3
 
-The decisive text is never the text the complaint resembles. Chunks are **whole clauses**, never cut mid-provision, carrying
-`regulator`, `doc_id`, `heading` and `kind` (scope / maintainability / servicing / general). The embedded text is prefixed with
-the document title and heading. `kind` lets the agent ask "what does this framework cover?" (`list_clauses kind=scope`) instead of
-hoping similarity finds it; `refs` extracted from "See clause ..." let it follow modifiers that sit in another clause or
-document (`SEBI-MC#4.5 -> SEBI-MFR#2.2`). Embeddings: a local sentence-transformers model (named in `.env`, never in code), or the offline
-hashing embedder by default. The index is keyed by chunk content hash: re-running ingestion embeds only new/changed chunks;
-`--only DOC_ID` forces one document; the whole index is never rebuilt unless `--force`. Measured on the sample corpus:
-clause chunking vs fixed-size windows moves final accuracy from 1.00 to 0.10 (`python -m eval.run_eval --variants CHUNKING=clause CHUNKING=fixed`).
+Corpus: SEBI circular 2023/156 on SCORES (which rescinded the 2022 SCORES master circular), the investor-servicing
+provisions of the SEBI (Mutual Funds) Regulations 1996, and the RBI Integrated Ombudsman Scheme 2021 (as amended 2022):
+64 clause-level chunks. Provenance and normalisation rules: `corpus/README.md`.
+
+The difficulty: each framework lists what it covers, not what it excludes, and the clause that decides a case is rarely the
+one the complaint resembles. The 4.1 complaint retrieves six SEBI SCORES passages and no RBI clause in a single pass; the
+deciding SEBI exclusion ranks 11th of 64, and the RBI Scheme never mentions "fixed deposit" at all (`docs/eval1_reference_case.md`).
+What addresses it:
+
+* **Whole-clause chunks**, never cut mid-provision, with the clause's own number as its id (`RBI-IOS#10(2)(a)`), so a
+  citation is circular-level and can be checked against the PDF. Where a provision is a lead sentence plus a list (SCORES
+  Annex II 5: "The following types of complaints shall not be dealt through SCORES: ..."), each item is its own chunk with the
+  lead sentence repeated, so the exclusion "RBI matters" is retrievable and citable on its own.
+* **`kind` metadata** (scope / maintainability / servicing / general): the agent can ask a framework *what it covers*
+  (`list_clauses kind=scope`) and *what it excludes* (`kind=maintainability`) instead of hoping similarity surfaces those.
+  This is how the exclusion clause and the RBI definitions are found although the complaint resembles neither.
+* **Regulator filter** on search: after identifying the product and entity, the agent searches inside one framework.
+* **Cross references** (`refs`): extracted from the text ("non-maintainable under clause 10" -> `RBI-IOS#10(1)`) and, where a
+  provision is modified by one that does not cite it, curated (SCORES paragraph 1, what SCORES covers -> Annex II 5.x, what
+  it does not). The agent follows them with `get_clause`.
+* **Embedded text** is prefixed with document title and clause heading. Embeddings: `all-MiniLM-L6-v2` via
+  sentence-transformers, run locally in the container (no API, no cost; model name only in `.env.example`). The `hash`
+  embedder (lexical, no download) is the offline fallback used by the tests. Measured with the rule-engine agent: MiniLM
+  raises gold-passage recall from 0.917 to 0.978 (single-pass baseline: 0.809 to 0.952).
+* **Re-embedding without a rebuild**: chunks are keyed by a content hash; `python -m app.ingest` embeds only new or changed
+  chunks and reuses the rest, `--only DOC_ID` re-embeds one document, `--force` everything. `index_meta.json` records build
+  time, embedder, chunk counts, each document's version, source and SHA-256, and throughput (exported as metrics, D2).
 
 ## Caching and rate limiting (D7)
 
@@ -91,6 +114,10 @@ Toxicity: a small mild-term list masks abusive input and blocks abusive output (
 ## Alternatives rejected
 
 * Single retrieval pass + one answer prompt: cannot return the scope clause of a framework the request never names (section 5).
+  Measured: prompt v1 (single search, answer) is right first time on 6 of 34 scenarios; v2 (agentic) on 31 of 34.
+* Indexing all 161 pages of the MF Regulations: hundreds of investment-limit passages no grievance turns on, diluting retrieval.
+* Fixed-size word windows: lose clause boundaries and therefore circular-level citations (kept as the `CHUNKING=fixed` experiment).
+* A 3B local model (`llama3.2`) as the Investigator: it confused the action field with the route and looped (INC-003).
 * Synchronous request/response: ties API capacity to model latency (above).
 * Callbacks instead of polling: the caller cannot receive them; adds delivery semantics.
 * Celery/RQ: a plain Redis list + heartbeat reaper is ~40 lines, has no extra moving parts, and is easy to explain; revisit if you need scheduling or priorities.

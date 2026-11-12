@@ -20,8 +20,12 @@ P("Run latency p50 / p95 vs SLO (submission to result)", [(q(.5, "run_e2e_second
 P("Throughput (runs/s), submissions, queue depth", [("sum(rate(runs_completed_total[1m]))", "completed"), ("sum(rate(runs_submitted_total[1m]))", "submitted"), ("sum(queue_depth)", "queue depth")])
 P("Error rate", [('sum(rate(runs_completed_total{outcome="failed"}[1m])) / clamp_min(sum(rate(runs_completed_total[1m])),1e-9)', "failed runs"), ('sum(rate(http_requests_total{status=~"5.."}[1m])) / clamp_min(sum(rate(http_requests_total[1m])),1e-9)', "HTTP 5xx")], "percentunit")
 P("Availability (up)", [("avg by (job) (up)", "{{job}}")], "percentunit")
-P("Container CPU (cores)", [('sum by (name) (rate(container_cpu_usage_seconds_total{name!=""}[1m]))', "{{name}}")])
-P("Container memory", [('sum by (name) (container_memory_working_set_bytes{name!=""})', "{{name}}")], "bytes")
+# cAdvisor names containers on a Linux host; on Docker Desktop it cannot, so each app container's own process metrics
+# (one process per container; worker replicas by instance) are shown alongside.
+P("Container CPU (cores)", [('sum by (name) (rate(container_cpu_usage_seconds_total{name!=""}[1m]))', "{{name}}"),
+                            ('sum by (job, instance) (rate(process_cpu_seconds_total{job=~"api|worker|stub-llm"}[1m]))', "{{job}} {{instance}}")])
+P("Container memory", [('sum by (name) (container_memory_working_set_bytes{name!=""})', "{{name}}"),
+                       ('sum by (job, instance) (process_resident_memory_bytes{job=~"api|worker|stub-llm"})', "{{job}} {{instance}}")], "bytes")
 P("Task outcomes (task success rate)", [("sum by (outcome) (rate(runs_completed_total[1m]))", "{{outcome}}")])
 P("Steps and tool calls per run (median)", [(q(.5, "run_agent_steps"), "steps p50"), (q(.5, "run_tool_calls"), "tool calls p50")])
 P("Latency per step, p95", [(q(.95, "step_duration_seconds", ", step"), "{{step}}")], "s")
@@ -33,7 +37,7 @@ P("Cost per second by step (USD)", [("sum by (step) (rate(llm_cost_usd_total[1m]
 P("Cache hit ratio", [('sum by (layer) (rate(cache_events_total{result="hit"}[1m])) / clamp_min(sum by (layer) (rate(cache_events_total[1m])),1e-9)', "{{layer}}")], "percentunit")
 P("Sampled quality over time", [("sum by (metric) (rate(quality_score_sum[5m])) / clamp_min(sum by (metric) (rate(quality_score_count[5m])),1e-9)", "{{metric}}")], "percentunit")
 P("Guardrails and rejects", [("sum by (type) (rate(guardrail_events_total[1m]))", "guard {{type}}"), ("sum by (reason) (rate(requests_rejected_total[1m]))", "rejected {{reason}}")])
-P("Worker uptime (s)", [('time() - process_start_time_seconds{job="worker"}', "{{instance}}")], "s")
+P("Container uptime (s)", [('time() - process_start_time_seconds{job=~"api|worker|stub-llm"}', "{{job}} {{instance}}")], "s")
 P("Index freshness: age (s), chunks, ingest chunks/s", [("time() - max(index_built_timestamp_seconds)", "index age"), ("max(index_chunks)", "chunks"), ("max(ingest_chunks_per_second)", "ingest chunks/s")])
 P("Caller feedback (last hour)", [("sum by (satisfactory) (increase(feedback_total[1h]))", "satisfactory={{satisfactory}}")])
 dash = {"title": "Grievance Router", "uid": "grievance-router", "schemaVersion": 39, "version": 1, "refresh": "5s",

@@ -1,122 +1,157 @@
 # Securities Investor Grievance Routing Service (Mini Project 12)
 
-UE24AM342AA5 - ML System Design & AgentOps. A multi-agent service that takes an investor complaint, validates it, decides which
-regulator (SEBI or RBI) and which entity are responsible from the regulations, and routes it with cited evidence - or escalates to
-a human when it cannot answer. It never disposes of a complaint.
+UE24AM342AA5, ML System Design & AgentOps. A multi-agent service that takes a (synthetic) investor complaint, validates it,
+works out from the regulations which regulator (SEBI or RBI) and which entity is responsible, and routes it with circular-level
+citations, or escalates to a human when it cannot answer safely. It never disposes of a complaint; a grievance officer decides.
 
 The section 4.1 case ("I invested in a fixed deposit through my bank's app ... I want to complain to SEBI") is routed to the
-**RBI Integrated Ombudsman Scheme** because the agent identifies a bank deposit, searches for the framework covering banks, reads its
-scope clauses, checks maintainability, and verifies every citation against retrieved text before answering.
+**RBI Integrated Ombudsman Scheme**, citing SEBI's own exclusion (`SEBI-SCORES#AII-5.3`: complaints within RBI's purview are not
+dealt through SCORES) and the RBI clauses that cover banks (`RBI-IOS#3(1)(e)`, `3(1)(j)`, `9`). Details: `docs/eval1_reference_case.md`.
 
-## Read this first: what is real and what is a placeholder
-
-| Item | Status |
+| Document | What it is |
 |---|---|
-| **Corpus** | `corpus/*.txt` are short **illustrative samples** so everything runs on a clean clone. They are *not* the official text and the clause numbers/values are not the real ones. **You must replace them with the real SEBI circular, SEBI MF Regulations chapter and RBI Integrated Ombudsman Scheme** (see `corpus/README.md`) and re-derive `eval/scenarios.json`. |
-| **Model** | The default "model" is a deterministic rule engine, served by the `stub-llm` container (also the load-test stub, D6, and the fallback when the provider is down). The OpenAI-compatible provider path is tested **only against the stub**. It has not been run against a real provider or real LLM prompt behaviour: do that before the demo (set `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY` in `.env`), then re-run the eval for the numbers in your report. |
-| Tested here | 18 automated tests (`pytest -q`); 29-scenario eval; API + Redis + stub + 2 workers as separate processes (real Redis server) including provider failure -> breaker -> degraded run -> recovery; Locust SLO check against that stack. |
-| **Not run here** | `docker compose up` itself (no Docker in the build sandbox: files were validated by parsing only), Prometheus/Grafana/Jaeger/cAdvisor, OpenTelemetry export, the sentence-transformers embedder, real-PDF extraction. Expect to fix small things on first `docker compose up` and log them in `docs/incident_log.md`. |
-| Numbers | Any figure you put in your report must come from **your** runs. Nothing measured in the sandbox is in the docs except the sample-corpus eval comparisons quoted in `docs/architecture.md`. |
+| `docs/report.md` | The project report: design, evaluation before/after, SLO and load test, cost, what did not work |
+| `docs/architecture.md` | Topology, deployment boundaries, agents, retrieval design, alternatives rejected |
+| `docs/eval1_reference_case.md` | The 4.1 case: passages it depends on, test values, why one retrieval pass fails |
+| `docs/data_contract.md` | Data contract of every external interface (also `GET /v1/contract`) |
+| `docs/slo.md` | p95 SLO (declared and committed before measuring) and load-test results |
+| `docs/runbook.md`, `docs/incident_log.md` | The two most likely failure modes; real failures met during development |
+| `corpus/README.md` | The three regulatory documents, versions, provenance, how they were converted |
+| `eval/scenarios.json` | The 34-scenario evaluation set with expected outcomes and supporting passages |
 
-## Quick start
+## 1. Run it
+
+**Prerequisites**: Docker Desktop (or Docker Engine) with Compose v2.24+, ~6 GB free disk, ~4 GB RAM for the containers, and
+internet access on the first start (images, Python wheels, and the ~90 MB embedding model).
 
 ```bash
-git clone <your repo> && cd <repo>
-docker compose up --build            # needs Docker Compose v2.24+; first build takes a few minutes
+git clone <this repository> grievance-router && cd grievance-router
+docker compose up --build
 ```
-Then: web client http://localhost:8000 | API docs http://localhost:8000/docs | Grafana http://localhost:3000 (dashboard "Grievance Router") |
-Jaeger http://localhost:16686 | Prometheus http://localhost:9090 | Locust `docker compose --profile load up locust` http://localhost:8089
+
+The first build takes several minutes (it installs CPU-only PyTorch for the local embedding model). Start-up order is handled
+by Compose: `redis` -> `indexer` (one-shot: downloads the embedding model into a volume and builds the index, then exits)
+-> `api` and `worker`. The system is ready when `docker compose ps` shows `api` as `healthy`.
+
+| URL | What |
+|---|---|
+| http://localhost:8000 | Web client: submit a complaint, see the route, citations and escalation path |
+| http://localhost:8000/docs | REST API (OpenAPI) |
+| http://localhost:3000 | Grafana, dashboard "Grievance Router" (no login) |
+| http://localhost:16686 | Jaeger: one trace per run across api and worker |
+| http://localhost:9090 | Prometheus |
+
+From a terminal (Python 3.9+, standard library only):
 
 ```bash
-docker compose up -d --scale worker=3                 # A7
-python scripts/demo.py fd                             # the section 4.1 case from the command line
-python scripts/demo.py trace <run id>                 # every tool call, query, passage, prompt version, latency, cost
+python3 scripts/demo.py fd                  # the section 4.1 case
+python3 scripts/demo.py trace <run id>      # every tool call, query, passage, prompt version, latency, tokens, cost, verification
 ```
-Configuration: copy `.env.example` to `.env` and change what you need (the committed `.env.example` already works as defaults).
-No credentials, endpoints or model identifiers are in code; they are runtime configuration.
 
-Without Docker (development):
+Or with curl:
+
 ```bash
-pip install -r requirements-dev.txt
-export REDIS_URL=redis://localhost:6379/0 INDEX_DIR=data/index LLM_PROVIDER=rules
-python -m app.ingest && uvicorn app.api:app &        # needs a Redis server; the tests use an in-memory one
-python -m app.worker &
-pytest -q
+curl -s -XPOST localhost:8000/v1/complaints -H 'Content-Type: application/json' -d '{"investor_ref":"INV100001",
+  "channel":"web","complaint_date":"2026-10-20","complaint_text":"My stock broker executed unauthorised trades in my trading account."}'
+# -> 202 {"run_id": "...", "status": "queued", "status_url": "/v1/runs/<id>"}
+curl -s localhost:8000/v1/runs/<id>          # poll until status is completed
 ```
 
-## Evaluation (L2, L3)
+**Configuration.** Defaults come from the committed `.env.example`; put your overrides in a git-ignored `.env` (same keys).
+No credentials, endpoints or model identifiers are in the code. Out of the box the "model" is the `stub-llm` container: it
+answers like a model after a realistic delay, with the deterministic rule engine behind it. That makes a clean clone work
+with no API key, and it is what the load test uses (D6).
+
+### Using a real model
+
+Any OpenAI-compatible endpoint works; set three values in `.env` and restart the workers:
+
 ```bash
-python -m eval.run_eval -v                                                   # 29 scenarios incl. the 4.1 case
-python -m eval.run_eval --variants PROMPT_VERSION=v1 PROMPT_VERSION=v2       # L2: compare two prompt variants
-python -m eval.run_eval --variants CHUNKING=clause CHUNKING=fixed            # L3: one deliberate change, all metrics before/after
+# a provider's free tier                       # or a local model with Ollama (8B-class or larger; see INC-003)
+LLM_BASE_URL=https://<provider>/v1             LLM_BASE_URL=http://host.docker.internal:11434/v1
+LLM_MODEL=<model name>                         LLM_MODEL=gemma4-16k
+LLM_API_KEY=<your key>                         LLM_API_KEY=
 ```
-Metrics (definitions in `eval/metrics.py`): groundedness, context relevance (+ gold recall), faithfulness, hallucination rate - lexical, claim-level equivalents
-of the TruLens measures (no TruLens dependency; say so in your report, or add TruLens as an extension). They are also reported *before* verification, which is what shows the
-verifier doing its job. Cost per 100 runs and the largest cost driver are printed at the end. Per-scenario results: `eval/results/*.json`.
-**Caveat**: with the rule engine as the model, the sample corpus and scenarios written by the same author, scores near 1.0 are expected and prove the plumbing, not real-world quality. Run with a real model on the real corpus for the report.
+```bash
+docker compose up -d worker
+```
 
-## Requirements map
+With Ollama, give the model a context window large enough for the agent (Ollama defaults to 4,096 tokens, which truncates
+prompts; INC-004), and raise the timeouts for local inference:
+
+```bash
+printf 'FROM gemma4\nPARAMETER num_ctx 16384\n' > Modelfile && ollama create gemma4-16k -f Modelfile
+# in .env also:  LLM_TIMEOUT_S=240   RUN_TIMEOUT_S=900
+```
+
+Set a spending limit on any paid account first. `LLM_FALLBACK=rules` (default) degrades to the rule engine when the provider is
+down (runs are flagged `degraded`); `LLM_FALLBACK=none` escalates instead.
+
+## 2. Demonstration checklist (section 9 of the brief)
+
+| # | Item | How |
+|---|---|---|
+| 1 | Clean clone to working system | `docker compose down -v` then `docker compose up --build` |
+| 2 | Valid request, routed with citations that resolve to retrieved text | `python3 scripts/demo.py valid` or the web client |
+| 3 | One run traced end to end | `python3 scripts/demo.py trace <run id>`; Jaeger, service `grievance-worker` |
+| 4 | Malformed request quarantined, no agent run | `python3 scripts/demo.py malformed`, then `curl localhost:8000/v1/quarantine`; `runs_submitted_total` unchanged |
+| 5 | Corpus cannot answer -> escalation | `python3 scripts/demo.py outofcorpus` (insurance: `entity_out_of_corpus`) |
+| 6 | Self-verification catches an unsupported answer | `python3 scripts/demo.py unsupported` (injects a fabricated citation; first verify fails, agent re-searches, second passes). With a real model the 4.1 case often shows this unaided (`docs/evidence/`) |
+| 7 | Prompt injection and the guardrail | `python3 scripts/demo.py injection` |
+| 8 | Circuit breaker and degradation | `docker compose stop stub-llm`, `python3 scripts/demo.py fd` (degraded, still verified), Grafana "Circuit breaker" panel; `docker compose start stub-llm` |
+| 9 | Locust vs the SLO, failing concurrency, `--scale` | `docker compose up -d --scale worker=1`, `scripts/loadtest.sh 8 3m w1`; repeat with `--scale worker=3`; results in `docs/slo.md` |
+| 10 | The section 4.1 case | `python3 scripts/demo.py fd` |
+
+## 3. Evaluation, tests and the corpus pipeline (no Docker needed)
+
+```bash
+python3.11 -m venv .venv && . .venv/bin/activate
+pip install -r requirements-dev.txt -r requirements-st.txt
+export KMP_DUPLICATE_LIB_OK=TRUE          # macOS only: faiss and torch both ship OpenMP (INC-008)
+pytest -q                                 # 24 tests; offline (hash embedder, rule engine, in-memory Redis)
+
+python -m eval.run_eval -v                                             # 34 scenarios incl. the 4.1 case
+python -m eval.run_eval --variants PROMPT_VERSION=v1 PROMPT_VERSION=v2   # L2: compare two prompt versions
+python -m eval.run_eval --variants CHUNKING=clause CHUNKING=fixed        # L3: one deliberate change, all metrics before/after
+python -m app.ingest --dump                                              # the 64 indexed clauses with kind and cross references
+```
+Evaluation settings come from the environment, like the service (e.g. `EMBEDDER=sentence-transformers EMBED_MODEL=all-MiniLM-L6-v2`,
+`LLM_PROVIDER=openai_compat LLM_BASE_URL=... LLM_MODEL=...`). With the default rule engine results are exactly repeatable; the
+numbers in the report that describe model quality come from a real model (`eval/real/`). Metric definitions: `eval/metrics.py`.
+
+## 4. Requirements map
 
 | Req | Where |
 |---|---|
-| F1-F2 REST + contract + validation + quarantine | `app/api.py`, `app/contracts.py`, `docs/data_contract.md` |
-| F3-F6 classify, retrieve, determine, route | `app/agents/` (`policy.py` rules engine, `tools.py`, `verifier.py`), `prompts/` |
-| F7 escalate | verifier + `graph.py` escalation paths; reasons in `contracts.py` |
-| F8 health, metrics, logs | `/healthz` `/readyz` `/metrics`, `app/logging_setup.py`, `app/metrics.py` |
-| A1 LangGraph, 4 tools, bounded loop | `app/agents/graph.py`, `tools.py`, `MAX_STEPS/MAX_TOOL_CALLS/RUN_TIMEOUT_S` |
-| A2 two agents + hand-off + failure | `docs/architecture.md` ("The agents") |
+| F1, F2, D1 contract, validation, quarantine | `app/contracts.py`, `app/api.py`, `docs/data_contract.md`, `GET /v1/contract`, `GET /v1/quarantine` |
+| F3-F6 classify, retrieve, determine, route | `app/agents/` (`graph.py`, `tools.py`, `verifier.py`, `policy.py`), `prompts/` |
+| F7 escalate | Verifier + escalation paths in `graph.py`; reasons in `contracts.py` |
+| F8 health, metrics, logs | `/healthz`, `/readyz`, `/metrics`, JSON logs (`app/logging_setup.py`) |
+| A1 LangGraph, 4 tools, bounded loop | `app/agents/graph.py`, `tools.py`; `MAX_STEPS`, `MAX_TOOL_CALLS`, `RUN_TIMEOUT_S` |
+| A2 two agents, hand-off, failure | Investigator + Verifier/Router, `docs/architecture.md` "The agents" |
 | A3 verify before returning | `app/agents/verifier.py`, `graph.py:n_verify` |
-| A4 FastAPI async + queue | `app/api.py`, `app/store.py`, `app/worker.py`, `docs/architecture.md` |
-| A5 timeouts, backoff, breaker, degradation | `app/llm/resilience.py`, tool timeouts in `graph.py`, tests in `tests/test_agent_and_resilience.py` |
-| A6 per-agent metrics + dashboard | `app/metrics.py`, `monitoring/grafana/dashboards/` (20 panels) |
-| A7 `--scale` | `docker-compose.yml` (`worker`), Prometheus DNS service discovery, `docs/slo.md` |
+| A4 async FastAPI + queue | `app/api.py`, `app/store.py` (Redis queue), `app/worker.py` |
+| A5 timeouts, backoff, breaker, degradation | `app/llm/resilience.py`, tool timeouts in `graph.py`, tests in `tests/` |
+| A6 per-agent metrics on the dashboard | `app/metrics.py`, `monitoring/grafana/dashboards/grievance-router.json` |
+| A7 `--scale worker=3` | `docker-compose.yml`, Prometheus DNS discovery, results in `docs/slo.md` |
 | A8 web client | `web/index.html` |
-| L1 chunking, embeddings, re-embedding | `app/retrieval/`, `app/ingest.py` |
-| L2 versioned prompts + comparison | `prompts/`, `app/prompts.py`, `eval.run_eval --variants` |
-| L3 eval set + metrics | `eval/` |
-| L4 guardrails | `app/guardrails.py` |
-| L5 tokens/cost per step | `graph.py:_account`, trace, `eval.run_eval` summary, Grafana |
-| L6 feedback + live quality sampling | `/v1/runs/{id}/feedback`, `/v1/quality`, `app/worker.py:quality_sample` |
-| D1 contracts + quarantine | `app/contracts.py`, `/v1/quarantine` |
-| D2 idempotent pipeline + freshness | `app/ingest.py`, `index_meta.json`, `index_*` metrics |
-| D3 >=4 services, health checks | `docker-compose.yml` (10 services), justification in `docs/architecture.md` |
-| D4 no credentials/endpoints/models in repo | `.env.example`, `app/config.py` |
-| D5 logs, correlation id, OTel, Prometheus, Grafana, run reconstruction | `logging_setup.py`, `telemetry.py`, `monitoring/`, `GET /v1/runs/{id}/trace` |
-| D6 SLO + Locust + stub | `docs/slo.md`, `load/locustfile.py`, `app/stub_llm.py` |
-| D7 caching + rate limiting | `app/store.py`, `api.py` |
+| L1 chunking, embeddings, re-embedding | `app/retrieval/`, `app/ingest.py`, `corpus/README.md` |
+| L2 versioned prompts + comparison | `prompts/*_v1.txt`, `*_v2.txt`; version + hash recorded in every response and trace |
+| L3 eval set + metrics, before/after | `eval/`, `docs/report.md` |
+| L4 guardrails | `app/guardrails.py`, `tools.py` (read-only allow-list) |
+| L5 tokens and cost per step and run | `graph.py:_account`, trace, Grafana, eval summary |
+| L6 feedback + live quality sampling | `POST /v1/runs/{id}/feedback`, `/v1/feedback/summary`, `/v1/quality`, `worker.py:quality_sample` |
+| D2 idempotent ingestion + freshness | `app/ingest.py`, `index_meta.json`, `index_*` metrics |
+| D3 services, health checks, boundaries | `docker-compose.yml` (9 services + Locust), `docs/architecture.md` |
+| D4 configuration at runtime | `.env.example`, `app/config.py` |
+| D5 logs, correlation id, tracing, dashboard, reconstruction | `logging_setup.py`, `telemetry.py`, `monitoring/`, `GET /v1/runs/{id}/trace` |
+| D6 SLO + Locust + stub | `docs/slo.md`, `load/locustfile.py`, `scripts/loadtest.sh`, `app/stub_llm.py` |
+| D7 caching + rate limiting | `app/store.py`, `app/api.py`, `app/retrieval/embedder.py` |
 | D8 runbook + incident log | `docs/runbook.md`, `docs/incident_log.md` |
 
-## Demonstration checklist (section 9)
+## 5. Troubleshooting
 
-| # | Do |
-|---|---|
-| 1 | `docker compose up --build` from a clean clone |
-| 2 | `python scripts/demo.py valid` (or the web client) |
-| 3 | `python scripts/demo.py trace <run id>`; also Jaeger |
-| 4 | `python scripts/demo.py malformed`, then `GET /v1/quarantine`; `runs_submitted_total` and queue unchanged |
-| 5 | `python scripts/demo.py outofcorpus` |
-| 6 | `python scripts/demo.py unsupported` (needs `ENABLE_FAULT_INJECTION=1`); open the trace: first verify fails, second passes |
-| 7 | `python scripts/demo.py injection` |
-| 8 | `docker compose stop stub-llm` then `python scripts/demo.py fd`; show Grafana breaker panel; `docker compose start stub-llm` |
-| 9 | Locust against the SLO in `docs/slo.md`; repeat with `--scale worker=3` |
-| 10 | `python scripts/demo.py fd` |
-
-## Before you submit - checklist
-
-1. Replace the corpus with the real documents; build the index; check `python -m app.ingest --dump`.
-2. At Evaluation 1 show the passages the 4.1 case depends on (the RBI scope clauses on deposits/banks, the prior-complaint clause) and the values you test with. Run the single-pass baseline on the real corpus and report honestly what it does.
-3. Re-derive `eval/scenarios.json` expectations (timeline values, clause ids) from the real text.
-4. Configure a real model, set a spending limit on the account, re-run eval and the demo; fill your own numbers into the report.
-5. Edit and **commit `docs/slo.md` before any load test**; fill the results table.
-6. Run `docker compose up` from a fresh clone on a second machine or after `docker compose down -v`; add every real failure to `docs/incident_log.md`.
-7. Fill `docs/report_template.md`; state what you did not do.
-
-## Be ready to explain (viva)
-
-* Why is the 4.1 case not solvable by one retrieval pass, and which step of the agent fixes it?
-* Which checks can stop a wrong answer, and what can they not catch? (Grounded-but-wrong: see baseline scenarios S19/S21/S23.)
-* What happens, step by step, when the provider goes down? When a worker dies mid-run?
-* Why async + queue + polling? Why one `worker` container for two agents?
-* How is "idempotent" achieved in ingestion? How do you re-embed one document?
-* What does each of groundedness / faithfulness / context relevance / hallucination rate measure, and why do they differ?
-* Why does the load test use a stub, and what would change with a real provider?
+* `api` never becomes healthy: `docker compose logs indexer`. The indexer must finish first; it needs internet once to download the embedding model.
+* Runs stay `queued`: `docker compose ps worker`, then `docs/runbook.md` section 2.
+* Every run escalates with a real model: `docs/runbook.md` section 1 (context window and output limit).
+* Port already in use: stop the other service or change the host port in `docker-compose.yml`.
