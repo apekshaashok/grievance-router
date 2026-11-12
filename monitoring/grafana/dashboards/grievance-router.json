@@ -1,0 +1,631 @@
+{
+ "title": "Grievance Router",
+ "uid": "grievance-router",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "5s",
+ "time": {
+  "from": "now-15m",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 1,
+   "title": "Run latency p50 / p95 vs SLO (submission to result)",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "histogram_quantile(0.5, sum by (le) (rate(run_e2e_seconds_bucket[1m])))",
+     "legendFormat": "p50",
+     "refId": "A"
+    },
+    {
+     "expr": "histogram_quantile(0.95, sum by (le) (rate(run_e2e_seconds_bucket[1m])))",
+     "legendFormat": "p95",
+     "refId": "B"
+    },
+    {
+     "expr": "max(slo_p95_target_seconds)",
+     "legendFormat": "SLO p95 target",
+     "refId": "C"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Throughput (runs/s), submissions, queue depth",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 0,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum(rate(runs_completed_total[1m]))",
+     "legendFormat": "completed",
+     "refId": "A"
+    },
+    {
+     "expr": "sum(rate(runs_submitted_total[1m]))",
+     "legendFormat": "submitted",
+     "refId": "B"
+    },
+    {
+     "expr": "sum(queue_depth)",
+     "legendFormat": "queue depth",
+     "refId": "C"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Error rate",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 0,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum(rate(runs_completed_total{outcome=\"failed\"}[1m])) / clamp_min(sum(rate(runs_completed_total[1m])),1e-9)",
+     "legendFormat": "failed runs",
+     "refId": "A"
+    },
+    {
+     "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) / clamp_min(sum(rate(http_requests_total[1m])),1e-9)",
+     "legendFormat": "HTTP 5xx",
+     "refId": "B"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Availability (up)",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 7,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "avg by (job) (up)",
+     "legendFormat": "{{job}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Container CPU (cores)",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 7,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[1m]))",
+     "legendFormat": "{{name}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Container memory",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 7,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bytes"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (name) (container_memory_working_set_bytes{name!=\"\"})",
+     "legendFormat": "{{name}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Task outcomes (task success rate)",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 14,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (outcome) (rate(runs_completed_total[1m]))",
+     "legendFormat": "{{outcome}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Steps and tool calls per run (median)",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 14,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "histogram_quantile(0.5, sum by (le) (rate(run_agent_steps_bucket[1m])))",
+     "legendFormat": "steps p50",
+     "refId": "A"
+    },
+    {
+     "expr": "histogram_quantile(0.5, sum by (le) (rate(run_tool_calls_bucket[1m])))",
+     "legendFormat": "tool calls p50",
+     "refId": "B"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Latency per step, p95",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 14,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "histogram_quantile(0.95, sum by (le, step) (rate(step_duration_seconds_bucket[1m])))",
+     "legendFormat": "{{step}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Retry rate",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 21,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (target) (rate(retries_total[1m]))",
+     "legendFormat": "{{target}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Circuit breaker (1 = open) and degraded runs",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 21,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "max by (instance) (circuit_breaker_open)",
+     "legendFormat": "breaker {{instance}}",
+     "refId": "A"
+    },
+    {
+     "expr": "sum(rate(degraded_runs_total[1m]))",
+     "legendFormat": "degraded runs/s",
+     "refId": "B"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Verification and escalations",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 21,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (result) (rate(verification_total[1m]))",
+     "legendFormat": "verify {{result}}",
+     "refId": "A"
+    },
+    {
+     "expr": "sum by (reason) (rate(escalations_total[1m]))",
+     "legendFormat": "escalate {{reason}}",
+     "refId": "B"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Tokens per second by step",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 28,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (step) (rate(llm_tokens_total[1m]))",
+     "legendFormat": "{{step}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Cost per second by step (USD)",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 28,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (step) (rate(llm_cost_usd_total[1m]))",
+     "legendFormat": "{{step}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Cache hit ratio",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 28,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (layer) (rate(cache_events_total{result=\"hit\"}[1m])) / clamp_min(sum by (layer) (rate(cache_events_total[1m])),1e-9)",
+     "legendFormat": "{{layer}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Sampled quality over time",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 35,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (metric) (rate(quality_score_sum[5m])) / clamp_min(sum by (metric) (rate(quality_score_count[5m])),1e-9)",
+     "legendFormat": "{{metric}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Guardrails and rejects",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 35,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (type) (rate(guardrail_events_total[1m]))",
+     "legendFormat": "guard {{type}}",
+     "refId": "A"
+    },
+    {
+     "expr": "sum by (reason) (rate(requests_rejected_total[1m]))",
+     "legendFormat": "rejected {{reason}}",
+     "refId": "B"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Worker uptime (s)",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 35,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "time() - process_start_time_seconds{job=\"worker\"}",
+     "legendFormat": "{{instance}}",
+     "refId": "A"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Index freshness: age (s), chunks, ingest chunks/s",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 42,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "time() - max(index_built_timestamp_seconds)",
+     "legendFormat": "index age",
+     "refId": "A"
+    },
+    {
+     "expr": "max(index_chunks)",
+     "legendFormat": "chunks",
+     "refId": "B"
+    },
+    {
+     "expr": "max(ingest_chunks_per_second)",
+     "legendFormat": "ingest chunks/s",
+     "refId": "C"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Caller feedback (last hour)",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 42,
+    "w": 8,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "expr": "sum by (satisfactory) (increase(feedback_total[1h]))",
+     "legendFormat": "satisfactory={{satisfactory}}",
+     "refId": "A"
+    }
+   ]
+  }
+ ],
+ "templating": {
+  "list": []
+ }
+}

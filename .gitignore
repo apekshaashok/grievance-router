@@ -1,0 +1,9 @@
+.env
+data/
+__pycache__/
+*.pyc
+eval/results/
+.pytest_cache/
+corpus/*.draft.txt
+.venv/
+.DS_Store

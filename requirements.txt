@@ -1,0 +1,12 @@
+fastapi==0.115.*
+uvicorn==0.30.*
+pydantic==2.*
+redis==5.*
+numpy
+faiss-cpu
+prometheus-client
+httpx
+langgraph
+pypdf
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Investor Grievance Routing</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+ body{font-family:system-ui,sans-serif;max-width:900px;margin:24px auto;padding:0 12px;line-height:1.4}
+ textarea,input,select{width:100%;box-sizing:border-box;padding:6px;margin:2px 0 10px;font:inherit}
+ .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px} button{padding:8px 16px;font:inherit;cursor:pointer}
+ .card{border:1px solid #999;border-radius:6px;padding:12px;margin:12px 0} .esc{border-color:#c60;background:#fff6ee}
+ .ok{border-color:#2a7;background:#f1fbf6} .err{border-color:#c33;background:#fff0f0} pre{white-space:pre-wrap;font-size:13px}
+ small{color:#555} blockquote{margin:6px 0;padding-left:10px;border-left:3px solid #aaa}
+</style></head><body>
+<h1>Investor Grievance Routing</h1>
+<p><small>Synthetic complaints only. The system produces a routing determination; a grievance officer decides.</small></p>
+<label>Complaint text</label>
+<textarea id="text" rows="5">I invested in a fixed deposit through my bank's app. The interest credited is lower than what I was promised. I want to complain to SEBI.</textarea>
+<div class="row">
+ <div><label>Investor ref</label><input id="ref" value="INV123456"></div>
+ <div><label>Channel</label><select id="channel"><option>web</option><option>email</option><option>phone</option><option>letter</option></select></div>
+ <div><label>Complaint date</label><input id="cdate" type="date"></div>
+ <div><label>Transaction date (optional)</label><input id="tdate" type="date"></div>
+ <div><label>Amount INR (optional)</label><input id="amount" type="number"></div>
+ <div><label>Entity name (optional)</label><input id="entity"></div>
+</div>
+<label><input type="checkbox" id="court" style="width:auto"> Matter pending in court</label>
+<p><button id="go">Submit</button> <span id="status"></span></p>
+<div id="out"></div>
+<script>
+const $=id=>document.getElementById(id); $("cdate").valueAsDate=new Date();
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+let runId=null;
+$("go").onclick=async()=>{
+  const body={investor_ref:$("ref").value,complaint_text:$("text").value,channel:$("channel").value,complaint_date:$("cdate").value,pending_in_court:$("court").checked};
+  if($("tdate").value)body.transaction_date=$("tdate").value;
+  if($("amount").value)body.amount_inr=Number($("amount").value);
+  if($("entity").value)body.entity_name=$("entity").value;
+  $("out").innerHTML="";$("status").textContent="submitting...";
+  const r=await fetch("/v1/complaints",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const j=await r.json();
+  if(!r.ok){$("status").textContent="";$("out").innerHTML='<div class="card err"><b>Rejected ('+r.status+')</b> - agent started: '+esc(j.agent_started)+'<pre>'+esc(JSON.stringify(j.errors||j,null,1))+'</pre></div>';return;}
+  runId=j.run_id;poll();
+};
+async function poll(){
+  const t0=Date.now();
+  while(true){
+    const r=await fetch("/v1/runs/"+runId);const j=await r.json();
+    $("status").textContent="run "+runId+": "+j.status+" ("+Math.round((Date.now()-t0)/1000)+"s)";
+    if(j.status==="completed"||j.status==="failed"){render(j);return}
+    await new Promise(s=>setTimeout(s,1000));
+  }
+}
+function render(j){
+  const res=j.result||{};
+  if(j.status==="failed"){$("out").innerHTML='<div class="card err"><b>Run failed</b> - no determination was produced.<pre>'+esc(JSON.stringify(res,null,1))+'</pre></div>';return}
+  const d=res.determination,esc_=d.route==="escalate-to-human";
+  let h='<div class="card '+(esc_?'esc':'ok')+'"><h3>'+esc(d.route)+(d.regulator?' &rarr; '+esc(d.regulator):'')+'</h3><p>'+esc(d.summary)+'</p>';
+  if(d.timeline_days)h+='<p><b>Timeline:</b> '+d.timeline_days+' days</p>';
+  if(d.next_step)h+='<p><b>Next step:</b> '+esc(d.next_step)+'</p>';
+  if(esc_)h+='<p><b>Escalation path:</b> '+esc(d.escalation.reason)+' - '+esc(d.escalation.detail)+'</p>';
+  h+='<p><small>prompt '+esc(res.prompt_version)+' | steps '+res.steps+' | tool calls '+res.tool_calls+' | verification attempts '+res.attempts+(res.degraded?' | DEGRADED MODE':'')+(j.cache_hit?' | cache hit':'')+'</small></p></div>';
+  h+='<h3>Basis</h3>'+d.basis.map(b=>'<blockquote>'+esc(b.claim)+' <small>['+esc(b.cite)+']</small></blockquote>').join('');
+  h+='<h3>Citations (resolved to retrieved text)</h3>'+(res.citations||[]).map(c=>'<div class="card"><b>'+esc(c.id)+'</b> - '+esc(c.doc_title)+' - '+esc(c.heading)+'<br>'+esc(c.text)+'</div>').join('');
+  if(res.guardrails&&res.guardrails.injection_detected)h+='<div class="card esc">Guardrail: instruction-like text was removed from the complaint before processing.</div>';
+  h+='<p>Was this result satisfactory? <button onclick="fb(true)">Yes</button> <button onclick="fb(false)">No</button> <span id="fbs"></span></p>';
+  $("out").innerHTML=h;
+}
+async function fb(ok){
+  let reason=null;if(!ok){reason=prompt("Reason?");if(!reason)return}
+  const r=await fetch("/v1/runs/"+runId+"/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({satisfactory:ok,reason:reason})});
+  $("fbs").textContent=r.ok?"thanks":"could not save";
+}
+</script></body></html>

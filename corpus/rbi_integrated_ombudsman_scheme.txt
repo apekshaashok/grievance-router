@@ -1,0 +1,79 @@
+# doc_id: RBI-IOS
+# regulator: RBI
+# title: Reserve Bank - Integrated Ombudsman Scheme, 2021
+# version: 2021 (in force 12-11-2021), as amended by notification CEPD.PRD.No.S544/13.01.001/2022-23 dated 05-08-2022
+# source: corpus/raw/rbi_ios_2021.pdf (official Scheme text, as amended; also published at rbidocs.rbi.org.in/rdocs/content/pdfs/RBIOS2021_121121.pdf)
+# Text is the official wording. Only PDF-extraction artefacts (split words, footnote markers) were repaired.
+# Clause identifiers follow the Scheme's own numbering. `kind` is an annotation added at ingestion (see corpus/README.md).
+
+[CLAUSE PRE | Purpose of the Scheme | kind: general]
+A Scheme for resolving customer grievances in relation to services provided by entities regulated by Reserve Bank of India in an expeditious and cost-effective manner under Section 35A of the Banking Regulation Act, 1949 (10 of 1949), Section 45L of the Reserve Bank of India Act, 1934 (2 of 1934), Section 18 of the Payment and Settlement Systems Act, 2007 (51 of 2007) and Section 11 of the Credit Information Companies (Regulation) Act, 2005 (30 of 2005).
+
+[CLAUSE 1(4) | Application of the Scheme | kind: scope | refs: RBI-IOS#3(1)(j)]
+The Scheme shall apply to the services provided by a Regulated Entity in India to its customers under the provisions of the Reserve Bank of India Act, 1934, the Banking Regulation Act, 1949, the Payment and Settlement Systems Act, 2007, and the Credit Information Companies (Regulation) Act, 2005 (30 of 2005).
+
+[CLAUSE 3(1)(e) | Definition of bank | kind: scope]
+"bank" means a 'banking company', a 'corresponding new bank', a 'Regional Rural Bank', 'State Bank of India' as defined in the Banking Regulation Act, 1949, a 'co-operative bank' as defined in Section 56 (c) of the Banking Regulation Act, 1949 to the extent not excluded under the Scheme, but does not include a bank in resolution or winding up or under directions or any other bank as specified by the Reserve Bank.
+
+[CLAUSE 3(1)(f) | Definition of complaint | kind: general]
+"Complaint" means a representation in writing or through other modes alleging deficiency in service on the part of a Regulated Entity, and seeking relief under the Scheme.
+
+[CLAUSE 3(1)(g) | Definition of deficiency in service | kind: scope]
+"Deficiency in service" means a shortcoming or an inadequacy in any financial service or such other services related thereto, which the Regulated Entity is required to provide statutorily or otherwise, which may or may not result in financial loss or damage to the customer.
+
+[CLAUSE 3(1)(i) | Definition of Non-Banking Financial Company | kind: scope]
+"Non-Banking Financial Company" (NBFC) means an NBFC as defined in Section 45-I (f) of the Reserve Bank of India Act, 1934 and registered with the Reserve Bank, to the extent not excluded under the Scheme, but does not include a Core Investment Company (CIC), an Infrastructure Debt Fund-Non-Banking Financial Company (IDF-NBFC), a Non-Banking Financial Company - Infrastructure Finance Company (NBFC-IFC), a company in resolution or winding up/liquidation, or under directions of Reserve Bank of India or any other NBFC specified by the Reserve Bank.
+
+[CLAUSE 3(1)(j) | Definition of Regulated Entity | kind: scope | refs: RBI-IOS#3(1)(e), RBI-IOS#3(1)(i), RBI-IOS#3(1)(l)]
+"Regulated Entity" means a bank or a Non-Banking Financial Company, or a System Participant or a Credit Information Company as defined in the Scheme, or any other entity as may be specified by the Reserve Bank from time to time; to the extent not excluded under the Scheme.
+
+[CLAUSE 3(1)(l) | Definition of System Participant | kind: scope]
+"System Participant" means a person other than the Reserve Bank and a System Provider, participating in a payment system as defined in the Payment and Settlement Systems Act, 2007.
+
+[CLAUSE 6(2) | Where complaints are lodged | kind: general]
+The complaints under the Scheme made online shall be registered on the portal (https://cms.rbi.org.in). Complaints in electronic mode (E-mail) and physical form, including postal and hand-delivered complaints, shall be addressed and sent to the place where the Centralised Receipt and Processing Centre of the Reserve Bank is established, for scrutiny and initial processing.
+
+[CLAUSE 8(1) | Powers and functions of the Ombudsman | kind: scope]
+The Ombudsman/Deputy Ombudsman shall consider the complaints of customers of Regulated Entities relating to deficiency in service.
+
+[CLAUSE 8(2) | Amount in dispute and compensation | kind: general]
+There is no limit on the amount in a dispute that can be brought before the Ombudsman for which the Ombudsman can pass an Award. However, for any consequential loss suffered by the complainant, the Ombudsman shall have the power to provide a compensation up to Rupees 20 lakh, in addition to, up to Rupees One lakh for the loss of the complainant's time, expenses incurred and for harassment/mental anguish suffered by the complainant.
+
+[CLAUSE 9 | Grounds of complaint | kind: scope | refs: RBI-IOS#10(1), RBI-IOS#10(2)(a)]
+Any customer aggrieved by an act or omission of a Regulated Entity resulting in deficiency in service may file a complaint under the Scheme personally or through an authorised representative as defined under clause 3(1)(c).
+
+[CLAUSE 10(1) | Grounds for non-maintainability of a complaint | kind: maintainability]
+No complaint for deficiency in service shall lie under the Scheme in matters involving: (a) commercial judgment/decision of a Regulated Entity; (b) a dispute between a vendor and a Regulated Entity relating to an outsourcing contract; (c) a grievance not addressed to the Ombudsman directly; (d) general grievances against Management or Executives of a Regulated Entity; (e) a dispute in which action is initiated by a Regulated Entity in compliance with the orders of a statutory or law enforcing authority; (f) a service not within the regulatory purview of the Reserve Bank; (g) a dispute between Regulated Entities; (h) a dispute involving the employee-employer relationship of a Regulated Entity; (i) a dispute for which a remedy has been provided in Section 18 of the Credit Information Companies (Regulation) Act, 2005; and (j) a dispute pertaining to customers of Regulated Entity not included under the Scheme.
+
+[CLAUSE 10(2)(a) | Prior complaint to the Regulated Entity | kind: maintainability]
+A complaint under the Scheme shall not lie unless the complainant had, before making a complaint under the Scheme, made a written complaint to the Regulated Entity concerned and (i) the complaint was rejected wholly or partly by the Regulated Entity, and the complainant is not satisfied with the reply; or the complainant had not received any reply within 30 days after the Regulated Entity received the complaint; and (ii) the complaint is made to the Ombudsman within one year after the complainant has received the reply from the Regulated Entity to the complaint or, where no reply is received, within one year and 30 days from the date of the complaint. Explanation 1: 'written complaint' shall include complaints made through other modes where proof of having made a complaint can be produced by the complainant.
+
+[CLAUSE 10(2)(b) | Same cause of action pending elsewhere | kind: maintainability]
+A complaint under the Scheme shall not lie unless the complaint is not in respect of the same cause of action which is already (i) pending before an Ombudsman or settled or dealt with on merits, by an Ombudsman, whether or not received from the same complainant or along with one or more complainants, or one or more of the parties concerned; (ii) pending before any Court, Tribunal or Arbitrator or any other Forum or Authority; or, settled or dealt with on merits, by any Court, Tribunal or Arbitrator or any other Forum or Authority, whether or not received from the same complainant or along with one or more of the complainants/parties concerned. Explanation 2: a complaint in respect of the same cause of action does not include criminal proceedings pending or decided before a Court or Tribunal or any police investigation initiated in a criminal offence.
+
+[CLAUSE 10(2)(c-f) | Other conditions for a complaint to lie | kind: maintainability]
+A complaint under the Scheme shall not lie unless (c) the complaint is not abusive or frivolous or vexatious in nature; (d) the complaint to the Regulated Entity was made before the expiry of the period of limitation prescribed under the Limitation Act, 1963, for such claims; (e) the complainant provides complete information as specified in clause 11 of the Scheme; (f) the complaint is lodged by the complainant personally or through an authorised representative other than an advocate unless the advocate is the aggrieved person.
+
+[CLAUSE 11 | Procedure for filing a complaint | kind: general]
+(1) The complaint may be lodged online through the portal designed for the purpose (https://cms.rbi.org.in). (2) The complaint may also be submitted through electronic or physical mode to the Centralised Receipt and Processing Centre as notified by the Reserve Bank. The complaint, if submitted in physical form, shall be duly signed by the complainant or by the authorised representative.
+
+[CLAUSE 12 | Initial scrutiny of complaints | kind: general | refs: RBI-IOS#10(1)]
+(1) Complaints which are in the nature of offering suggestions or seeking guidance or explanation shall not be treated as valid complaints under the Scheme and shall be closed accordingly with a suitable communication to the complainant. (2) Complaints which are non-maintainable under clause 10 shall be separated to issue a suitable communication to the complainant. (3) The remaining complaints shall be assigned to the offices of the Ombudsman for further examination under intimation to the complainant. A copy of the complaint shall also be forwarded to the Regulated Entity against whom the complaint is filed with a direction to submit its written version.
+
+[CLAUSE 14(1) | Resolution by settlement | kind: general]
+The Ombudsman/Deputy Ombudsman shall endeavour to promote settlement of a complaint by agreement between the complainant and the Regulated Entity through facilitation or conciliation or mediation.
+
+[CLAUSE 14(3) | Written version by the Regulated Entity | kind: servicing]
+The Regulated Entity shall, on receipt of the complaint, file its written version in reply to the averments in the complaint enclosing therewith copies of the documents relied upon, within 15 days before the Ombudsman for resolution. Provided that the Ombudsman may, at the request of the Regulated Entity in writing to the satisfaction of the Ombudsman, grant such further time as may be deemed fit to file its written version and documents.
+
+[CLAUSE 15(8) | Compliance with an Award | kind: servicing]
+The Regulated Entity shall comply with the Award and intimate compliance to the Ombudsman within 30 days from the date of receipt of the letter of acceptance from the complainant, unless it has preferred an appeal under sub-clause (2) of clause 17.
+
+[CLAUSE 16 | Rejection of a complaint | kind: general | refs: RBI-IOS#10(1)]
+(1) The Deputy Ombudsman or the Ombudsman may reject a complaint at any stage if it appears that the complaint made: (a) is non-maintainable under clause 10; or (b) is in the nature of offering suggestions or seeking guidance or explanation. (2) The Ombudsman may reject a complaint at any stage if: (a) in his opinion there is no deficiency in service; or (b) the compensation sought for the consequential loss is beyond the power of the Ombudsman to award the compensation as indicated in clause 8(2); or (c) the complaint is not pursued by the complainant with reasonable diligence; or (d) the complaint is without any sufficient cause; or (e) the complaint requires consideration of elaborate documentary and oral evidence and the proceedings before the Ombudsman are not appropriate for adjudication of such complaint; or (f) in the opinion of the Ombudsman there is no financial loss or damage, or inconvenience caused to the complainant.
+
+[CLAUSE 17(3) | Appeal by the complainant | kind: general]
+The complainant may, aggrieved by an Award under clause 15(1) or rejection of a complaint under clauses 16(2)(c) to 16(2)(f), within 30 days of the date of receipt of the Award or rejection of the complaint, prefer an appeal before the Appellate Authority.
+
+[CLAUSE 18(3) | Display of nodal officer and portal | kind: general]
+The Regulated Entity shall display prominently for the benefit of their customers at their branches/places where the business is transacted, the name and contact details (Telephone/mobile number and E-mail ID) of the Principal Nodal Officer along with the details of the complaint lodging portal of the Ombudsman (https://cms.rbi.org.in).

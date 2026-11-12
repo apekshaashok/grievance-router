@@ -1,0 +1,99 @@
+# doc_id: SEBI-SCORES
+# regulator: SEBI
+# title: SEBI Circular SEBI/HO/OIAE/IGRD/CIR/P/2023/156 - Redressal of investor grievances through SCORES and linking it to ODR
+# version: 20-09-2023 (in force 04-12-2023; rescinds Master Circular SEBI/HO/OIAE/IGRD/P/CIR/2022/0150 dated 07-11-2022)
+# source: corpus/raw/sebi_scores_2023.pdf (SEBI circular as circulated by NSE; also on sebi.gov.in -> Legal -> Circulars)
+# This circular rescinded and replaced SEBI's master circular on SCORES, so it is the governing grievance-redressal text.
+# Text is the official wording. Only PDF-extraction artefacts were repaired. Two tables (Schedules II and V) are
+# rendered row by row as sentences so that each row can be cited. Clause ids: P = paragraph of the circular,
+# AI / AII = Annexure I / II, SCH = Schedule. `kind` is an annotation added at ingestion (see corpus/README.md).
+
+[CLAUSE P1 | Entities covered by SCORES | kind: scope | refs: SEBI-SCORES#AII-1, SEBI-SCORES#AII-3, SEBI-SCORES#AII-5.1, SEBI-SCORES#AII-5.2, SEBI-SCORES#AII-5.3]
+SEBI Complaint Redressal System (SCORES) is a centralised web based complaint redressal facilitation platform launched in 2011 vide circular dated June 3, 2011 (bearing reference number CIR/OIAE/2/2011) to provide a facilitative platform for the benefit of the aggrieved investors, whose grievances against (a) listed company, (b) registered intermediary or (c) market infrastructure institution ("Entities") remain unresolved.
+
+[CLAUSE P2 | Purpose of the revision | kind: general]
+In order to strengthen the existing investor grievance handling mechanism through SCORES by making the entire redressal process of grievances in the securities market comprehensive by providing a solution that makes the process more efficient by reducing timelines and by introducing auto-routing and auto-escalation of complaint, SEBI notified the Securities and Exchange Board of India (Facilitation of Grievance Redressal Mechanism) (Amendment) Regulations, 2023 and amended the regulations as mentioned under 'Schedule I' vide notification dated August 16, 2023.
+
+[CLAUSE P5.1 | Action Taken Report to SEBI | kind: servicing]
+Notwithstanding anything contained in this circular or any other circular, the Entities shall, submit the Action Taken Report ("ATR") to SEBI within 21 calendar days from the date of receipt of the complaint.
+
+[CLAUSE P6 | Rescission of the 2022 Master Circular | kind: general]
+This Circular shall rescind the Master Circular SEBI/HO/OIAE/IGRD/P/CIR/2022/0150 dated November 07, 2022 with effect from December 04, 2023.
+
+[CLAUSE AI-1.2 | Entity to resolve within 21 calendar days | kind: servicing]
+All Entities who are in receipt of the complaints of the investors ("Complaint") through SCORES, shall resolve the complaint within 21 calendar days of receipt of such Complaint.
+
+[CLAUSE AI-1.3 | Auto-forwarding to the entity and ATR | kind: servicing]
+The Complaints lodged on SCORES against any Entity shall be automatically forwarded to the concerned Entity through SCORES for resolution and submission of ATR. Entities shall resolve the Complaint and upload the ATR on SCORES within 21 calendar days of receipt of the Complaint. The ATR of the entity will be automatically routed to the complainant.
+
+[CLAUSE AI-1.4 | Copy to the Designated Body | kind: servicing | refs: SEBI-SCORES#SCH-II]
+The Complaint against the Entity shall be simultaneously forwarded through SCORES to the relevant Designated Body as mentioned under Schedule II. The Designated Body shall ensure that the concerned Entity submits the ATRs within the stipulated time of 21 calendar days.
+
+[CLAUSE AI-2.1 | First review requested by the complainant | kind: general]
+In case complainant is satisfied with the resolution provided by the entity vide the ATR or complainant does not choose to review the Complaint, the Complaint shall be disposed on SCORES. However, if the complainant is not satisfied, the complainant may request for a review of the resolution provided by the entity within 15 calendar days from the date of the ATR.
+
+[CLAUSE AI-2.2 | First review by the Designated Body | kind: general]
+In case the complainant has requested for a review of the resolution provided by the entity or the entity has not submitted the ATR within the stipulated time of 21 calendar days, the concerned Designated Body shall take cognizance of the Complaint for first review of the resolution through SCORES. The Designated Body shall take up the first review with the concerned Entity, wherever required.
+
+[CLAUSE AI-2.3 | Revised ATR on first review | kind: general]
+The Designated Body may seek clarification on the ATR submitted by the Entity for the first review. The Designated Body shall stipulate the timeline in such a manner to ensure that the Designated Body submits the revised ATR to the complainant on SCORES within 10 calendar days of the review sought.
+
+[CLAUSE AI-3.1 | Second review by SEBI | kind: general]
+The complainant may seek a second review of the Complaint within 15 calendar days from the date of the submission of the ATR by the Designated Body. In case the complainant is satisfied with the ATR provided by the concerned Designated Body or complainant does not choose to review the Complaint within the period of 15 calendar days, the Complaint shall be disposed on SCORES.
+
+[CLAUSE AI-3.2 | SEBI takes cognizance | kind: general]
+In case the complainant is not satisfied with the ATR provided by the Designated Body or the concerned Designated Body has not submitted the ATR within 10 calendar days, SEBI may take cognizance of the Complaint for second review through SCORES.
+
+[CLAUSE AI-4.3 | Stock brokers and depository participants on SCORES | kind: scope]
+Stock Brokers and Depository Participants shall also obtain SCORES authentication. The procedure for obtaining SCORES authentication shall be as may be specified.
+
+[CLAUSE AI-5.5 | Listed companies and their registrar / share transfer agent | kind: scope]
+Complaints against listed companies can be processed by companies in-house or through its Registrar to Issue and Share Transfer Agent (RTI/STA). In case the complaints are processed by the RTI/STA on behalf of the listed company, any failure on the part of the RTI/STA to redress the complaint or failure to update Action Taken Report (ATR) in SCORES, will be treated as failure of the listed company to furnish information to SEBI and non redressal of investor complaints by the listed company.
+
+[CLAUSE AI-7.2 | Fine on listed companies for non-redressal | kind: general | refs: SEBI-SCORES#SCH-V]
+The Designated Stock Exchange (DSE) shall levy a fine of Rs 1000 per day per complaint on the listed company for violation of Regulation 13 (1) of SEBI (Listing Obligation and Disclosure Requirements) Regulations, 2015 (LODR Regulations) read with SEBI circular no. SEBI/HO/CFD/CMD/CIR/P/2020/12 dated January 22, 2020. The procedure and actions shall only be applicable for categories of complaints placed at Schedule V.
+
+[CLAUSE AII-1 | Approach the entity first | kind: maintainability]
+Investors shall first take up their grievances for redressal with the entity concerned, through their designated persons/officials who handle issues relating to compliance and redressal of investor grievances.
+
+[CLAUSE AII-3 | When a complaint may be lodged on SCORES | kind: maintainability]
+In order to enhance ease, speed and accuracy in the redressal of grievance, the investor may lodge the Complaint against any Entity on SCORES within a period of one year from the date of occurrence of the cause of action, where: 3.1. The complainant has approached the Entity for redressal of the complaint and the Entity has rejected the complaint or the complainant has not received any communication from the concerned Entity; or 3.2. The complainant is not satisfied with the reply received or the redressal by the concerned Entity.
+
+[CLAUSE AII-4 | Complaints beyond the limitation period | kind: maintainability]
+If any complaint filed on SCORES beyond the limitation period specified above, SEBI may reject such complaint.
+
+[CLAUSE AII-5.1 | Not dealt through SCORES: unlisted or delisted companies | kind: maintainability]
+The following types of complaints shall not be dealt through SCORES: Complaints against companies which are unlisted/delisted and companies on Dissemination Board of Stock Exchanges (except complaints on valuation of securities).
+
+[CLAUSE AII-5.2 | Not dealt through SCORES: matters pending in a court | kind: maintainability]
+The following types of complaints shall not be dealt through SCORES: Complaints relating to cases pending in a court or subject matter of quasi-judicial proceedings, matters pending with Online Dispute Resolution of SEBI etc.
+
+[CLAUSE AII-5.3 | Not dealt through SCORES: other regulators' purview | kind: maintainability]
+The following types of complaints shall not be dealt through SCORES: Complaints falling under the purview of other regulatory bodies such as Reserve Bank of India, (RBI), Insurance Regulatory and Development Authority of India (IRDAI), Pension Fund Regulatory and Development Authority of India (PFRDAI), Competition Commission of India (CCI), or complaints falling under the purview of other ministries.
+
+[CLAUSE AII-5.4 | Not dealt through SCORES: companies under IBC resolution | kind: maintainability]
+The following types of complaints shall not be dealt through SCORES: Complaints against a company under resolution under the relevant provisions of the Insolvency and Bankruptcy Code, 2016 (IBC).
+
+[CLAUSE AII-5.5 | Not dealt through SCORES: struck-off or vanishing companies | kind: maintainability]
+The following types of complaints shall not be dealt through SCORES: Complaints against the companies where the name of company is struck off from Register of Companies (RoC) or a vanishing company as published by MCA.
+
+[CLAUSE AII-5.6 | Not dealt through SCORES: companies in liquidation | kind: maintainability]
+The following types of complaints shall not be dealt through SCORES: Liquidated Companies or companies under liquidation.
+
+[CLAUSE AII-5.7 | Not dealt through SCORES: market intelligence | kind: maintainability]
+The following types of complaints shall not be dealt through SCORES: Complaints which are in the nature of market intelligence i.e., information given to SEBI regarding violation of any of the provisions of the securities laws.
+
+[CLAUSE AII-8 | SCORES is a facilitative platform | kind: general]
+SCORES shall only be a facilitative platform for investors to get redressal of their grievances from the concerned entity.
+
+[CLAUSE AII-9 | Disputes needing adjudication go to ODR | kind: maintainability]
+In cases where investors raise issues, which require adjudication on any third party rights, on questions of law or fact or which is in the nature of a lis between parties, or if investors are not satisfied with disposal on SCORES post SEBI review, they shall seek appropriate remedies through the Online Dispute Resolution mechanism in securities market. In addition, investors have the option to approach legal forums including civil courts, consumer courts etc.
+
+[CLAUSE AII-10 | ODR or civil remedy while pending on SCORES | kind: general]
+Investors can approach the Online Dispute Resolution mechanism or other appropriate civil remedies at any point of time. In case the complainant opts for Online Dispute Resolution mechanism or other appropriate civil remedies while the complaint is pending on SCORES, the complaint shall be treated as disposed on SCORES.
+
+[CLAUSE SCH-II | Designated bodies for each class of entity | kind: scope]
+Schedule II lists each intermediary and its Designated Body. Listed companies: Stock Exchanges. Merchant Bankers: Association of Investment Bankers of India (AIBI). Bankers to an Issue: Association of Investment Bankers of India (AIBI). Real Estate Investment Trusts: Indian REITs Association. Municipal Debt Securities: Stock Exchanges. Debenture Trustees: Trustees Association of India. Portfolio Managers: Association of Portfolio Managers in India (APMI). Mutual Funds: Association of Mutual Funds in India (AMFI). Depository Participants: Depositories. Investment Advisers: BSE Administration & Supervision Ltd. (BASL). Registrars to an Issue and Share Transfer Agents: Stock Exchanges. Stock Brokers: Stock Exchanges. Vault Managers: Depositories.
+
+[CLAUSE SCH-V | Categories of complaints against listed companies | kind: scope]
+Schedule V lists the categories of complaints against listed companies: Non updation of address/Signature or Corrections etc. Non-receipt of Bonus. Non receipt of Dividend. Non receipt duplicate debt securities certificate. Non-receipt of duplicate share certificate. Non receipt of fractional entitlement. Non receipt of interest for delay in dividend. Non receipt of interest for delay in payment of interest on debt security. Non receipt of interest for delay in redemption proceeds of debt security. Non receipt of interest for delay in refunds. Non receipt of interest on securities. Non receipt of redemption amount of debt securities. Non receipt of refund in Public/Rights issue. Non receipt of Rights Issue form. Non receipt of securities after conversion/endorsement/consolidation/splitting. Non receipt of securities after transfer. Non receipt of securities in public/rights issue. Non receipt of shares after conversion/endorsement/consolidation/splitting. Non receipt of shares after transfer. Non receipt of shares after transmission. Non receipt of shares in public/rights issue (including allotment letter). Non-receipt of interest for delay in dispatch/credit of securities. Receipt of refund/dividend in physical mode instead of electronic mode. Receipt of shares in physical mode instead of electronic mode. Demat/Remat. Complaints of any other nature as may be informed from time to time.

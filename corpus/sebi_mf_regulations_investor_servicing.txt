@@ -1,0 +1,39 @@
+# doc_id: SEBI-MFR
+# regulator: SEBI
+# title: SEBI (Mutual Funds) Regulations, 1996 - definitions and investor servicing provisions
+# version: SEBI consolidated text dated December 2024 (161 pp.); regulation 60A inserted w.e.f. 18-08-2023
+# source: corpus/raw/sebi_mf_regs.pdf (sebi.gov.in/sebi_data/attachdocs/dec-2024/1734952378369.pdf)
+# Only the definitions and the provisions that govern servicing of unitholders are indexed: Reg. 2 (selected
+# definitions), 25 (AMC obligations on registrars and complaints), 53 (transfer of dividend and redemption
+# proceeds), 59B (dispute resolution), 60 and 60A (grievance redressal). Wording is official; only extraction
+# artefacts were repaired and footnote markers removed. `kind` is an annotation added at ingestion.
+
+[CLAUSE 2(1)(d) | Definition of asset management company | kind: scope]
+"asset management company" means a company formed and registered under the Companies Act 1956 (1 of 1956) or Companies Act, 2013 (18 of 2013) and approved by the Board under sub regulation (2) of regulation 21.
+
+[CLAUSE 2(1)(q) | Definition of mutual fund | kind: scope]
+"mutual fund" means a fund established in the form of a trust to raise monies through the sale of units to the public or a section of the public under one or more schemes for investing in securities, money market instruments, gold or gold related instruments, silver or silver related instruments, real estate assets and such other assets and instruments as may be specified by the Board from time to time.
+
+[CLAUSE 2(1)(z)(i) | Definition of unit holder | kind: scope]
+"unit holder" means a person holding unit in a scheme of a mutual fund.
+
+[CLAUSE 25(15) | Registrars and share transfer agents of the AMC | kind: general]
+The asset management company shall appoint registrars and share transfer agents who are registered with the Board: Provided if the work relating to the transfer of units is processed in-house, the charges at competitive market rates may be debited to the scheme and for rates higher than the competitive market rates, prior approval of the trustees shall be obtained and reasons for charging higher rates shall be disclosed in the annual accounts.
+
+[CLAUSE 25(22)(b) | Board of the AMC to ensure complaints are redressed | kind: servicing]
+The board of directors of the asset management company shall ensure that the investor complaints received are periodically reviewed and redressed.
+
+[CLAUSE 53 | Transfer of dividend and redemption proceeds | kind: servicing | refs: SEBI-MFR#60A(1)]
+Every asset management company shall, (a) transfer to the unitholders the dividend payments within such period as may be specified by the Board from time to time; (b) transfer to the unitholders the redemption or repurchase proceeds within such period as may be specified by the Board from time to time; (c) in the event of failure to transfer the redemption or repurchase proceeds or dividend payments within the period specified in clauses (a) and (b), the asset management company shall be liable to pay interest to the unitholders at such rate as may be specified by the Board for the period of such delay; (d) notwithstanding payment of such interest to the unit-holders under clause (c), the asset management company may be liable for action for failure to transfer the redemption or repurchase proceeds or dividend payments within the stipulated time: Provided that physical despatch of redemption or repurchase proceeds or dividend payments shall be carried out only in exceptional circumstances and asset management companies shall be required to maintain records along with reasons for all such physical despatches.
+
+[CLAUSE 59B | Dispute resolution | kind: general]
+All claims, differences or disputes between the asset management company and investors arising out of or in relation to the activities of the asset management company in the securities market shall be submitted to a dispute resolution mechanism that includes mediation and/or conciliation and/or arbitration, in accordance with the procedure specified by the Board.
+
+[CLAUSE 60 | Disclosures to the investors | kind: general]
+The trustee shall be bound to make such disclosures to the unitholders as are essential in order to keep them informed about any information which may have an adverse bearing on their investments.
+
+[CLAUSE 60A(1) | Grievance redressal by the asset management company | kind: servicing]
+The asset management company shall redress investor grievances promptly but not later than twenty-one calendar days from the date of receipt of the grievance and in such manner as may be specified by the Board.
+
+[CLAUSE 60A(2) | Body for monitoring grievance redressal | kind: general]
+The Board may also recognize a body corporate for handling and monitoring the process of grievance redressal within such time and in such manner as may be specified.

@@ -1,0 +1,116 @@
+# docker compose up --build                 -> whole system, from a clean clone
+# docker compose up --scale worker=3        -> three agent workers (A7)
+# docker compose --profile load up locust   -> Locust UI on :8089 (D6)
+# Requires Docker Compose v2.24+ (optional env_file entries).
+
+x-app: &app
+  build:
+    context: .
+    args:
+      INSTALL_ST: ${INSTALL_ST:-1}
+  image: grievance-router:local
+  env_file:
+    - .env.example            # defaults, committed
+    - path: .env              # your overrides, git-ignored
+      required: false
+  volumes:
+    - index-data:/data
+  restart: unless-stopped
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redis-data:/data]
+    healthcheck: {test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 10}
+
+  indexer:                       # one-shot: the idempotent ingestion pipeline (D2)
+    <<: *app
+    command: ["python", "-m", "app.ingest"]
+    restart: "no"
+
+  stub-llm:
+    <<: *app
+    command: ["uvicorn", "app.stub_llm:app", "--host", "0.0.0.0", "--port", "8081"]
+    ports: ["8081:8081"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8081/healthz', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    <<: *app
+    environment: {SERVICE_NAME: api}
+    ports: ["8000:8000"]
+    depends_on:
+      redis: {condition: service_healthy}
+      indexer: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8000/readyz', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  worker:                        # no container_name / host port, so it can be scaled
+    <<: *app
+    command: ["python", "-m", "app.worker"]
+    environment: {SERVICE_NAME: worker}
+    depends_on:
+      redis: {condition: service_healthy}
+      indexer: {condition: service_completed_successfully}
+      stub-llm: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:9100/metrics', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    volumes: ["./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["9090:9090"]
+    depends_on: [api]
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    environment:                 # local demo: anonymous admin, so no credential is stored in the repository
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["3000:3000"]
+    depends_on: [prometheus]
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.57
+    environment: {COLLECTOR_OTLP_ENABLED: "true"}
+    ports: ["16686:16686"]
+
+  cadvisor:                      # per-container CPU / memory for the dashboard
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports: ["8080:8080"]
+
+  locust:
+    image: locustio/locust:2.29.1
+    profiles: ["load"]
+    env_file:
+      - .env.example
+      - path: .env
+        required: false
+    volumes: ["./load:/mnt/locust:ro"]
+    command: ["-f", "/mnt/locust/locustfile.py"]     # target host comes from LOCUST_HOST in .env.example
+    ports: ["8089:8089"]
+    depends_on: [api]
+
+volumes:
+  index-data:
+  redis-data:
