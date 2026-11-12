@@ -41,6 +41,12 @@ def run_variant(label, overrides, scenarios, verbose=False):
             for sc in scenarios:
                 t0 = time.time()
                 r = run_agent(sc["fields"], run_id=f"eval-{sc['id']}", fault=sc.get("fault"), llm=llm, index=idx)
+                reruns = 0
+                # An outage is not a quality result: wait out the breaker and rerun (counted and reported).
+                while (r["determination"].get("escalation") or {}).get("reason") == "provider_unavailable" and reruns < 2:
+                    reruns += 1
+                    time.sleep(cfg.BREAKER_COOLDOWN_S + 1)
+                    r = run_agent(sc["fields"], run_id=f"eval-{sc['id']}-r{reruns}", fault=sc.get("fault"), llm=llm, index=idx)
                 text = {k: v["text"] for k, v in r["_retrieved"].items()}
                 first = r["first_proposal"]
                 row = {
@@ -59,7 +65,7 @@ def run_variant(label, overrides, scenarios, verbose=False):
                     "retrieval": retrieval_metrics(r["retrieved_ids"], sc["gold_clauses"]),
                     "retrieved_ids": r["retrieved_ids"], "gold_clauses": sc["gold_clauses"],
                     "guardrail_injection": r["guardrails"]["injection_detected"],
-                    "prompt_version": r["prompt_version"], "summary": r["determination"]["summary"],
+                    "prompt_version": r["prompt_version"], "summary": r["determination"]["summary"], "provider_reruns": reruns,
                     "citations": [c["id"] for c in r["citations"]],
                 }
                 rows.append(row)
@@ -99,6 +105,7 @@ def summarise(label, overrides, rows):
             "verification_caught": sum(r["verification_caught_error"] for r in rows),
             "mean_steps": mean([r["steps"] for r in rows]), "mean_tool_calls": mean([r["tool_calls"] for r in rows]),
             "mean_attempts": mean([r["attempts"] for r in rows]),
+            "provider_reruns": sum(r["provider_reruns"] for r in rows),
             "cost_per_100_runs_usd": cost / n * 100, "tokens_per_100_runs": sum(r["tokens"] for r in rows) / n * 100,
             "largest_cost_driver": top[0], "largest_cost_driver_share": (top[1] / sum(drivers.values())) if drivers and sum(drivers.values()) else None,
         },

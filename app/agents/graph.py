@@ -105,7 +105,8 @@ class RunContext:
         for _ in range(2):
             t0 = time.time()
             with span(f"llm.{step}", run_id=self.run_id, prompt_version=self.prompt_version):
-                res = self.llm.complete(system, json.dumps(payload, default=str), step)
+                res = self.llm.complete(system, json.dumps(payload, default=str), step,
+                                        deadline=self.started + cfg.RUN_TIMEOUT_S)
             dt = time.time() - t0
             cost = self._account(step, res, dt)
             self.event("llm", step=step, role=role, prompt_version=self.prompt_version, prompt_sha=sha, provider=res.provider,
@@ -151,7 +152,32 @@ def extract_json(text: str) -> Any:
     try:
         return json.loads(t[a:b + 1])
     except json.JSONDecodeError as exc:
+        repaired = _close_brackets(t[a:])      # small models often drop the final "}" (INC-010)
+        if repaired is not None:
+            try:
+                return json.loads(repaired)
+            except json.JSONDecodeError:
+                pass
         raise ValueError(f"invalid JSON: {exc}") from exc
+
+
+def _close_brackets(t: str) -> Optional[str]:
+    """Append the closing brackets a truncated-by-one JSON text is missing. Only closes; never rewrites content."""
+    stack, in_str, esc = [], False, False
+    for ch in t:
+        if in_str:
+            esc, in_str = (False, in_str) if esc else (ch == "\\", ch != '"')
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch in "{[":
+            stack.append("}" if ch == "{" else "]")
+        elif ch in "}]":
+            if not stack or stack.pop() != ch:
+                return None
+    if in_str or not stack or len(stack) > 3:
+        return None
+    return t.rstrip() + "".join(reversed(stack))
 
 
 def parse_action(obj: Any) -> dict:

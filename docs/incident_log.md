@@ -78,3 +78,20 @@ Add an entry for every failure you hit while demonstrating.
 | Detection | `--progress plain` build log. |
 | Root cause | Network throughput of the Docker Desktop VM on this machine; torch (CPU) is the largest download. |
 | Fix | None needed for correctness. CPU-only torch wheels (`download.pytorch.org/whl/cpu`) keep the download smaller than the default CUDA build. Build once before the demonstration; `INSTALL_ST=0` builds a smaller image that uses the hash embedder. |
+
+| ID | INC-010 |
+|---|---|
+| Date | 2026-11-12 |
+| Symptom | Real-model runs (`gemma4`) that clearly reached the right answer ended `provider_unavailable`; model calls were slow and a 10-word verifier reply reported ~950 completion tokens. |
+| Detection | A spy on the JSON parser printed the raw replies: valid-looking determinations missing their final `}`; a direct request showed a hidden `reasoning` field consuming the output budget. |
+| Root cause | (1) `gemma4` is a thinking model: on Ollama it reasons before answering unless told not to, spending time and `max_tokens`. (2) It regularly drops the last closing brace of a nested JSON object. Two unparseable replies trigger the format fallback; with `LLM_FALLBACK=none` the run escalates. |
+| Fix | `LLM_REASONING_EFFORT=none` (new setting, sent only when set). The parser now appends missing closing brackets when that alone makes the text valid JSON (never rewrites content; result still schema-checked and verified). Test `test_json_missing_final_brace_is_repaired_but_garbage_is_not`. |
+
+| ID | INC-011 |
+|---|---|
+| Date | 2026-11-12 |
+| Symptom | First full real-model evaluation: scenarios S15-S34 all escalated `provider_unavailable` in ~1 ms each; S07 took 1,995 s although `RUN_TIMEOUT_S=900`. Accuracy 0.03, meaningless. |
+| Detection | Per-scenario results (`exec_s`, escalation reasons). |
+| Root cause | The Locust load tests were running in Docker at the same time; local inference slowed, calls timed out (each up to 240 s, retried twice), the circuit breaker opened, and the next scenarios started within the 20 s cooldown, so the breaker refused them, correctly. Separately, the run deadline was only checked between steps, so one call with retries could overrun it. |
+| Fix | (1) Model calls now get `min(LLM_TIMEOUT_S, time left in the run)` and no retry starts after the deadline. (2) The eval harness waits out the breaker and reruns a scenario that ended `provider_unavailable` (at most twice; reported as `provider_reruns`). (3) Real-model evaluations are run with nothing else loading the machine. |
+| Lesson | An outage must never be scored as a quality result, and the breaker is shared by every run in a process: one slow period affects the runs after it. |

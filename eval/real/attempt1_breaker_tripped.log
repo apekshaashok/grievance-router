@@ -1,0 +1,61 @@
+W1112 19:50:46.705000 37473 .venv/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+== variant: baseline  (34 scenarios)
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 23032.11it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+{"ts": "2026-11-12T14:20:48.438Z", "level": "WARNING", "service": "service", "logger": "huggingface_hub.utils._http", "event": "Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.", "correlation_id": "-", "run_id": "-"}
+  OK  S01-fd-bank-app                refer-to-other-regulator   RBI   steps=5 attempts=2
+  BAD S02-savings-interest           not-maintainable           RBI   steps=2 attempts=1
+  BAD S03-upi-failed                 escalate-to-human          RBI   steps=4 attempts=2
+  BAD S04-credit-card-charges        refer-to-other-regulator   RBI   steps=2 attempts=1
+  BAD S05-nbfc-loan                  not-maintainable           RBI   steps=5 attempts=2
+  BAD S06-broker-unauthorised        escalate-to-human          null  steps=4 attempts=2
+  BAD S07-broker-payout              escalate-to-human          SEBI  steps=4 attempts=2
+  BAD S08-broker-outage              escalate-to-human          SEBI  steps=4 attempts=2
+  BAD S09-mf-redemption              escalate-to-human          -     steps=3 attempts=2
+  BAD S10-mf-sip-units               escalate-to-human          SEBI  steps=3 attempts=1
+  BAD S11-mf-nav                     escalate-to-human          -     steps=3 attempts=2
+  BAD S12-registrar-transfer         escalate-to-human          SEBI  steps=3 attempts=2
+  BAD S13-registrar-ipo-refund       escalate-to-human          SEBI  steps=4 attempts=2
+  BAD S14-company-dividend           escalate-to-human          SEBI  steps=3 attempts=2
+  BAD S15-company-bonus              escalate-to-human          -     steps=0 attempts=1
+  BAD S16-depository-freeze          escalate-to-human          -     steps=0 attempts=1
+  BAD S17-depository-transmission    escalate-to-human          -     steps=0 attempts=1
+  BAD S18-split-upi-mf               escalate-to-human          -     steps=0 attempts=1
+  BAD S19-split-netbanking-broker    escalate-to-human          -     steps=0 attempts=1
+  BAD S20-insurance                  escalate-to-human          -     steps=0 attempts=1
+  BAD S21-crypto                     escalate-to-human          -     steps=0 attempts=1
+  BAD S22-court-broker               escalate-to-human          -     steps=0 attempts=1
+  BAD S23-court-bank                 escalate-to-human          -     steps=0 attempts=1
+  BAD S24-market-loss                escalate-to-human          -     steps=0 attempts=1
+  BAD S25-injection-fd               escalate-to-human          -     steps=0 attempts=1
+  BAD S26-vague                      escalate-to-human          -     steps=0 attempts=1
+  BAD S27-fault-citation-mf          escalate-to-human          -     steps=0 attempts=1
+  BAD S28-fault-timeline-broker      escalate-to-human          -     steps=0 attempts=1
+  BAD S29-fault-invented-bank        escalate-to-human          -     steps=0 attempts=1
+  BAD S30-unlisted-company           escalate-to-human          -     steps=0 attempts=1
+  BAD S31-limitation-broker          escalate-to-human          -     steps=0 attempts=1
+  BAD S32-pension                    escalate-to-human          -     steps=0 attempts=1
+  BAD S33-fd-prior-complaint         escalate-to-human          -     steps=0 attempts=1
+  BAD S34-toxic-broker               escalate-to-human          -     steps=0 attempts=1
+
+metric                                  baseline                      
+accuracy_final                          0.029                         
+accuracy_first_attempt                  0.000                         
+groundedness                            1.000                         
+context_relevance                       0.131                         
+gold_recall                             0.208                         
+faithfulness                            1.000                         
+hallucination_rate                      0.000                         
+hallucination_rate_before_verification  0.000                         
+verification_caught                     11                            
+mean_steps                              1.441                         
+mean_tool_calls                         0.706                         
+mean_attempts                           1.324                         
+cost_per_100_runs_usd                   0.393                         
+tokens_per_100_runs                     484647.059                    
+largest_cost_driver                     investigate                   
+largest_cost_driver_share               0.873                         
+
+full per-scenario results: eval/real/20261112-211954.json
+
+incorrect in first variant: S02-savings-interest, S03-upi-failed, S04-credit-card-charges, S05-nbfc-loan, S06-broker-unauthorised, S07-broker-payout, S08-broker-outage, S09-mf-redemption, S10-mf-sip-units, S11-mf-nav, S12-registrar-transfer, S13-registrar-ipo-refund, S14-company-dividend, S15-company-bonus, S16-depository-freeze, S17-depository-transmission, S18-split-upi-mf, S19-split-netbanking-broker, S20-insurance, S21-crypto, S22-court-broker, S23-court-bank, S24-market-loss, S25-injection-fd, S26-vague, S27-fault-citation-mf, S28-fault-timeline-broker, S29-fault-invented-bank, S30-unlisted-company, S31-limitation-broker, S32-pension, S33-fd-prior-complaint, S34-toxic-broker

@@ -1,0 +1,8 @@
+### workers=3 users=8
+=== SLO CHECK: runs=99 failures=0 p50=7.6s p95=8.6s target_p95=30s throughput=0.83 runs/s cache=off -> MET ===
+### workers=3 users=16
+=== SLO CHECK: runs=194 failures=0 p50=7.6s p95=9.2s target_p95=30s throughput=1.62 runs/s cache=off -> MET ===
+### workers=3 users=32
+=== SLO CHECK: runs=196 failures=0 p50=17.0s p95=19.0s target_p95=30s throughput=1.64 runs/s cache=off -> MET ===
+### workers=3 users=48
+=== SLO CHECK: runs=192 failures=0 p50=26.0s p95=29.0s target_p95=30s throughput=1.60 runs/s cache=off -> MET ===

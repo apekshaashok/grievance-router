@@ -68,3 +68,11 @@ def test_repeated_tool_call_is_not_rerun_and_run_still_ends():
     assert r["determination"]["escalation"]["reason"] == "limits_exceeded"
     dup = [e for e in r["_trace"] if e["type"] == "tool" and (e.get("error") or "").startswith("duplicate call")]
     assert dup, "duplicate calls must be answered with an observation, not re-executed"
+
+
+def test_json_missing_final_brace_is_repaired_but_garbage_is_not():
+    from app.agents.graph import extract_json
+    import pytest
+    assert extract_json('{"action":"finish","determination":{"route":"x","basis":[{"claim":"a } b","cite":"c"}]}')["action"] == "finish"
+    with pytest.raises(ValueError):
+        extract_json('{"action": "finish", "determination": {"route": }')

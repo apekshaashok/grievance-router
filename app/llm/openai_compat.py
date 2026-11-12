@@ -21,6 +21,8 @@ class OpenAICompatProvider:
             headers["Authorization"] = f"Bearer {self.key}"
         body = {"model": self.model, "temperature": 0, "max_tokens": cfg.LLM_MAX_TOKENS,
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
+        if cfg.LLM_REASONING_EFFORT:     # thinking models spend the output budget on hidden reasoning otherwise (INC-010)
+            body["reasoning_effort"] = cfg.LLM_REASONING_EFFORT
         try:
             r = self.client.post(f"{self.base}/chat/completions", json=body, headers=headers, timeout=timeout)
         except httpx.HTTPError as exc:

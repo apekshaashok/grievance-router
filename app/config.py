@@ -26,6 +26,7 @@ _SPEC = {
     "LLM_FALLBACK": (str, "rules"),       # rules | none
     "LLM_TIMEOUT_S": (float, 30.0),
     "LLM_MAX_TOKENS": (int, 2000),
+    "LLM_REASONING_EFFORT": (str, None),  # e.g. none|low|medium|high; sent only when set (OpenAI-compatible field)
     "LLM_MAX_RETRIES": (int, 2),
     "LLM_BACKOFF_BASE_S": (float, 0.5),
     "BREAKER_FAILURES": (int, 3),

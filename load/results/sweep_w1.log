@@ -1,0 +1,9 @@
+### workers=1 users=4
+=== SLO CHECK: runs=50 failures=0 p50=7.6s p95=8.2s target_p95=30s throughput=0.42 runs/s cache=off -> MET ===
+scripts/loadtest.sh: line 16: unexpected EOF while looking for matching `"'
+### workers=1 users=8
+=== SLO CHECK: runs=66 failures=0 p50=12.0s p95=14.0s target_p95=30s throughput=0.55 runs/s cache=off -> MET ===
+### workers=1 users=16
+=== SLO CHECK: runs=67 failures=0 p50=26.0s p95=43.0s target_p95=30s throughput=0.50 runs/s cache=off -> NOT MET ===
+### workers=1 users=24
+=== SLO CHECK: runs=58 failures=0 p50=40.0s p95=57.0s target_p95=30s throughput=0.48 runs/s cache=off -> NOT MET ===

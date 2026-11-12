@@ -14,6 +14,7 @@ import uuid
 from locust import HttpUser, between, events, task
 
 SLO = float(os.environ.get("SLO_P95_SECONDS", "30"))
+USE_CACHE = os.environ.get("LOCUST_USE_CACHE", "0") == "1"   # D7: 1 = allow whole-run cache hits, 0 = measure real runs
 POLL_EVERY_S = 0.5
 GIVE_UP_S = 180
 
@@ -39,7 +40,9 @@ class Investor(HttpUser):
     def complaint_to_result(self):
         body = {"investor_ref": f"INV{random.randint(100000, 999999)}", "complaint_text": random.choice(COMPLAINTS),
                 "channel": "web", "complaint_date": time.strftime("%Y-%m-%d")}
-        headers = {"X-Client-Id": self.client_id, "Cache-Control": "no-cache"}   # no-cache: measure real runs, not cache hits
+        headers = {"X-Client-Id": self.client_id}
+        if not USE_CACHE:
+            headers["Cache-Control"] = "no-cache"                # measure real runs, not cache hits
         t0 = time.time()
         with self.client.post("/v1/complaints", json=body, headers=headers, name="POST /v1/complaints", catch_response=True) as r:
             if r.status_code != 202:
@@ -67,6 +70,6 @@ def _check_slo(environment, **_):
     rps = s.total_rps if hasattr(s, "total_rps") else s.num_requests / max(s.last_request_timestamp - s.start_time, 1)
     met = p95 <= SLO and s.num_failures == 0
     print(f"\n=== SLO CHECK: runs={s.num_requests} failures={s.num_failures} p50={p50:.1f}s p95={p95:.1f}s target_p95={SLO:.0f}s "
-          f"throughput={rps:.2f} runs/s -> {'MET' if met else 'NOT MET'} ===")
+          f"throughput={rps:.2f} runs/s cache={'on' if USE_CACHE else 'off'} -> {'MET' if met else 'NOT MET'} ===")
     if not met:
         environment.process_exit_code = 1

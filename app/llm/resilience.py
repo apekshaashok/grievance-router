@@ -54,12 +54,17 @@ class ResilientLLM:
         self.primary, self.fallback = primary, fallback
         self.breaker = breaker or CircuitBreaker(cfg.BREAKER_FAILURES, cfg.BREAKER_COOLDOWN_S)
 
-    def complete(self, system: str, user: str, step: str) -> LLMResult:
+    def complete(self, system: str, user: str, step: str, deadline: float | None = None) -> LLMResult:
+        """`deadline` (epoch seconds) is the run's wall-clock limit: each attempt gets at most the time left, and no
+        retry starts after it, so one slow call cannot overrun RUN_TIMEOUT_S by several timeouts."""
         if self.primary is not None and self.breaker.allow():
             attempts = cfg.LLM_MAX_RETRIES + 1
             for i in range(attempts):
+                timeout = cfg.LLM_TIMEOUT_S if deadline is None else min(cfg.LLM_TIMEOUT_S, deadline - time.time())
+                if timeout <= 1:
+                    raise ProviderUnavailable("run deadline reached before the model call could be made")
                 try:
-                    res = self.primary.complete(system, user, step, cfg.LLM_TIMEOUT_S)
+                    res = self.primary.complete(system, user, step, timeout)
                     self.breaker.success()
                     LLM_CALLS.labels(self.primary.name, "ok").inc()
                     return res
